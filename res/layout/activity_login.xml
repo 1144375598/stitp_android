@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/login_background"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="200dip"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/etusername"
+            style="@style/LoginEditText"
+            android:hint="@string/input_username" />
+
+        <EditText
+            android:id="@+id/etpassword"
+            style="@style/LoginEditText"
+            android:hint="@string/input_password" />
+    </LinearLayout>
+
+<!--     <CheckBox
+        android:id="@+id/chkSaveName"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="30dip"
+        android:text="@string/remember_me"
+        android:textColor="#FFFFFF" /> -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="90dip"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="200dip"
+            android:layout_height="45dip"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_background"
+            android:text="@string/login"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/register"
+            android:layout_width="180dip"
+            android:layout_height="45dip"
+            android:layout_gravity="right"
+            android:background="#00000000"
+            android:text="@string/register"
+            android:textColor="#FFFFFF"
+            android:textSize="15dp" />
+    </LinearLayout>
+
+</LinearLayout>
