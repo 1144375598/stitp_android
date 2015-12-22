@@ -9,7 +9,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
+
+import android.R.integer;
+import android.util.Log;
+import njupt.stitp.android.activity.LoginActivity;
+import njupt.stitp.android.model.APP;
+import njupt.stitp.android.model.Track;
 
 public class ServerHelper {
 	private static final String base = "http://192.168.191.4:8080/NJUPT_STITP_Server/";
@@ -34,10 +43,9 @@ public class ServerHelper {
 			connection.setDoInput(true);
 			DataOutputStream out = new DataOutputStream(
 					connection.getOutputStream());
-			out.writeBytes(URLEncoder.encode(buffer.toString(), "UTF-8"));
+			out.writeBytes(buffer.toString());
 			if (connection.getResponseCode() == 200) {
 				InputStream in = connection.getInputStream();
-				// 下面对获取到的输入流进行读取
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(in));
 				StringBuilder response = new StringBuilder();
@@ -57,5 +65,35 @@ public class ServerHelper {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+
+	public boolean uploadTrackAndAPP(String path, List<Track> tracks,List<APP> apps) {
+		String info;
+		if(tracks!=null){
+			info=new Gson().toJson(tracks).toString();
+		}else if(apps!=null){
+			info=new Gson().toJson(apps).toString();
+		}else{
+			return false;
+		}
+		try {
+			URL url = new URL(base + path);
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setConnectTimeout(8000);
+			connection.setReadTimeout(8000);
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			DataOutputStream out = new DataOutputStream(
+					connection.getOutputStream());
+			out.writeBytes("info =" + info);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

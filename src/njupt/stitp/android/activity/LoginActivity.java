@@ -7,6 +7,7 @@ import java.util.Map;
 import njupt.stitp.android.R;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.User;
+import njupt.stitp.android.service.GetAPPMsgService;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 public class LoginActivity extends Activity {
 	private Button login;
 	private Button register;
+	private Button forgetPassword;
 	private EditText etusername;
 	private EditText etpassword;
 	private String username;
@@ -41,7 +43,7 @@ public class LoginActivity extends Activity {
 		sPHelper = new SPHelper();
 		if (!sPHelper.getInfo(getApplicationContext(), "userInfo", "username")
 				.equals("")) {
-			Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+			Intent intent = new Intent(LoginActivity.this, FunctionActivity.class);
 			startActivity(intent);
 		}
 		init();
@@ -53,6 +55,14 @@ public class LoginActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		forgetPassword.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent =new Intent(LoginActivity.this, ResetPwdActivity.class);
+				startActivity(intent);
+			}
+		});
 		login.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -61,13 +71,13 @@ public class LoginActivity extends Activity {
 				if (username == null || username.isEmpty()) {
 					etusername.requestFocus();
 					etusername.setError(new StringBuffer(
-							R.string.username_is_null));
+							getString(R.string.username_is_null)));
 					return;
 				}
 				if (password == null || password.isEmpty()) {
 					etpassword.requestFocus();
 					etpassword.setError(new StringBuffer(
-							R.string.password_is_null));
+							getString(R.string.password_is_null)));
 					return;
 				}
 				p.show();
@@ -94,54 +104,67 @@ public class LoginActivity extends Activity {
 	private void init() {
 		etusername = (EditText) findViewById(R.id.etusername);
 		etpassword = (EditText) findViewById(R.id.etpassword);
+		forgetPassword=(Button) findViewById(R.id.forgetPassword);
 		login = (Button) findViewById(R.id.login);
 		register = (Button) findViewById(R.id.register);
 		p = new ProgressDialog(LoginActivity.this);
-		p.setTitle(R.string.loginProgress_title);
-		p.setMessage(new StringBuffer(R.string.loginProgress_message));
+		p.setTitle(getString(R.string.loginProgress_title));
+		p.setMessage(new StringBuffer(getString(R.string.loginProgress_message)));
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case 0:
-					Toast.makeText(LoginActivity.this, R.string.login_success,
+					Toast.makeText(LoginActivity.this,
+							getString(R.string.login_success),
 							Toast.LENGTH_LONG).show();
-					//µ«¬º≥…π¶£¨ªÒ»°∫¢◊”–≈œ¢
-					new Thread(new Runnable() {						
+					// Ëé∑ÂèñÂ≠©Â≠êÂíåËá™Â∑±‰ø°ÊÅØ
+					new Thread(new Runnable() {
 						@Override
 						public void run() {
-							path="user/getChild";
+							path = "user/getChild";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
 							String result = new ServerHelper().getResult(path,
 									params);
-							List<User> childs =JsonUtil.getChild(result);
-							if(childs!=null){
-								new UserDB(getApplicationContext()).addUsers(childs);
+							List<User> childs = JsonUtil.getChild(result);
+							if (childs != null) {
+								new UserDB(getApplicationContext())
+										.addUsers(childs);
 							}
-							path="user/getUser";
-							result = new ServerHelper().getResult(path,
-									params);
-							User user=JsonUtil.getUser(result);
-							if(user!=null){
-								new UserDB(getApplicationContext()).addUser(user);;
+							path = "user/getUser";
+							result = new ServerHelper().getResult(path, params);
+							User user = JsonUtil.getUser(result);
+							if (user != null) {
+								new UserDB(getApplicationContext())
+										.addUser(user);
+								;
 							}
 						}
 					}).start();
+					Map<String, String> params = new HashMap<String, String>();
+					params.put("username", username);
+					sPHelper.saveInfo(getApplicationContext(), "userInfo",
+							params);
 					Intent intent = new Intent(LoginActivity.this,
-							MainActivity.class);
+							GetAPPMsgService.class);
+					startService(intent);
+					intent = new Intent(LoginActivity.this, FunctionActivity.class);
 					startActivity(intent);
 					break;
 				case 1:
-					Toast.makeText(LoginActivity.this, R.string.username_error,
+					Toast.makeText(LoginActivity.this,
+							getString(R.string.username_error),
 							Toast.LENGTH_LONG).show();
 					break;
 				case 2:
-					Toast.makeText(LoginActivity.this, R.string.user_not_exist,
+					Toast.makeText(LoginActivity.this,
+							getString(R.string.user_not_exist),
 							Toast.LENGTH_LONG).show();
 					break;
 				case -1:
-					Toast.makeText(LoginActivity.this, R.string.connect_server_fail,
+					Toast.makeText(LoginActivity.this,
+							getString(R.string.connect_server_fail),
 							Toast.LENGTH_LONG).show();
 					break;
 				}

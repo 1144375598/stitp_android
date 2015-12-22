@@ -3,7 +3,7 @@ package njupt.stitp.android.model;
 public class Track {
 
 	private String username;
-	private double longtitude;
+	private double longitude;
 	private double latitude;
 	private String addTime;
 
@@ -15,12 +15,12 @@ public class Track {
 		this.username = username;
 	}
 
-	public double getLongtitude() {
-		return longtitude;
+	public double getLongitude() {
+		return longitude;
 	}
 
-	public void setLongtitude(double longtitude) {
-		this.longtitude = longtitude;
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
 	public double getLatitude() {

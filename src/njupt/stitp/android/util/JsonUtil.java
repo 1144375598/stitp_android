@@ -8,7 +8,7 @@ import net.sf.json.JSONObject;
 import njupt.stitp.android.model.User;
 
 public class JsonUtil {
-	// jsonÎª¿Õ£¬·µ»Ø-1£»·ñÔò·µ»Øresult_code
+	//jsonå­—ç¬¦ä¸²ä¸ºç©ºè¿”å›-1ï¼Œå¦åˆ™è¿”å›çŠ¶æ€ä»£ç 
 	public static int LoginAndRegister(String json) {
 		if (json == null || json.isEmpty())
 			return -1;
@@ -16,7 +16,6 @@ public class JsonUtil {
 		return jsonObject.getInt("result_code");
 	}
 
-	// jsonÎª¿Õ£¬·µ»Ønull£»ÎŞº¢×Ó£¬·µ»Ø¿ÕµÄlist£»ÓĞº¢×Ó£¬·µ»Øº¢×ÓµÄlist
 	public static List<User> getChild(String json) {
 		if (json == null || json.isEmpty())
 			return null;

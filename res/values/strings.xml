@@ -1,10 +1,11 @@
 <resources>
 
-    <string name="app_name">NJUPT_STITP_Android</string>
+    <string name="app_name">青少年保护软件</string>
 	<string name="input_username">请输入用户名</string>
 	<string name="input_password">请输入密码</string>
 	<string name="login">登录</string>
 	<string name="register">没有账号，注册一个>></string>
+	 <string name="forget_password">忘记密码</string>
 	<string name="loginProgress_title">登录中</string>
 	<string name="loginProgress_message">登录中，马上就好</string>
 	<string name="username_is_null">对不起，用户名不能为空</string>
@@ -16,4 +17,11 @@
 	<string name="register_set_username">请输入用户名：</string>
 	<string name="register_set_password">设置密码：</string>
 	<string name="register_button">注册</string>
+	<string name="register_upload_message">上传数据中</string>
+	<string name="register_wait">请稍等...</string>
+	<string name="register_success">注册成功,开始登录....!</string>
+	<string name="register_fail">注册失败，用户名已存在</string>
+	<string name="password_is_different">密码不一致</string>
+	<string name="confirm_password">确认密码</string>
+	<string name="settings">设置</string>
 </resources>

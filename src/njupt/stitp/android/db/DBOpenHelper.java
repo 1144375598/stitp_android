@@ -30,7 +30,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
 	private static final String CREATE_TRACK = "create table  track( " + /* "IF NOT EXISTS" */
 	"id integer primary key autoincrement," + "username text,"
-			+ "longtitude rear," + "latitude rear," + "addTime text," + ")";
+			+ "longitude rear," + "latitude rear," + "addTime text," + "isCommit integer)";
 
 	private static final String CREATE_MESSAGE = "create table IF NOT EXISTS message( "
 			+ "id integer primary key autoincrement,"
@@ -40,18 +40,14 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	public static final String CREATE_APP = "create table  app("
 			+ "username text, " + "appusetime integer, " + "appname text,"
 			+ "addtime text ," + "primary key(username,appname,addtime))";
-	public static final String CREATE_VALIDATIONQUESTION = "create table validationquestion ("
-			+ "id integer primary key autoincrement, "
-			+ "username text, "
-			+ "question text," 
-			+ "answer text)";
+
 	public static int version = 1;
 	private Context mContext;
 	public DBOpenHelper(Context context) {
 		super(context, name, null, version);
 		mContext=context;
 	}
-
+	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_USER);
