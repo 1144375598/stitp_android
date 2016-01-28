@@ -2,32 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/register_background"
+    android:background="@drawable/bg_register"
     android:orientation="vertical" >
 
-  <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/return_login"
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/back_ground" />
-
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:background="@drawable/register_back_ground" />
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="250dip"
-        android:layout_height="160dip"
+        android:layout_height="250dip"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="120dip"
         android:orientation="vertical" >
@@ -42,25 +23,37 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="50dip"
-            android:inputType="textPassword"
-            android:hint="@string/register_set_password" />
+            android:hint="@string/register_set_password"
+            android:inputType="textPassword" />
+
         <EditText
             android:id="@+id/comfirm_password"
             android:layout_width="match_parent"
             android:layout_height="50dip"
-            android:inputType="textPassword"
-            android:hint="@string/confirm_password" />
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/validation_question"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:hint="@string/validation_question" />
+
+        <EditText
+            android:id="@+id/validation_answer"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:hint="@string/validation_answer" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/regist"
+        android:id="@+id/register"
         android:layout_width="200dp"
         android:layout_height="45dp"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/button_background"
+        android:background="@drawable/bg_button"
         android:text="@string/register_button"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
-
 
 </LinearLayout>

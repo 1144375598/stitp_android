@@ -5,7 +5,11 @@
 	<string name="input_password">请输入密码</string>
 	<string name="login">登录</string>
 	<string name="register">没有账号，注册一个>></string>
-	 <string name="forget_password">忘记密码</string>
+	<string name="validation_question">请输入验证问题</string>
+	<string name="validation_answer">请输入验证问题答案</string>
+	<string name="question_is_null">对不起，验证问题不能为空</string>
+	<string name="answer_is_null">对不起，验证问题答案不能为空</string>
+	 <string name="forget_password">忘记密码?</string>
 	<string name="loginProgress_title">登录中</string>
 	<string name="loginProgress_message">登录中，马上就好</string>
 	<string name="username_is_null">对不起，用户名不能为空</string>
@@ -24,4 +28,19 @@
 	<string name="password_is_different">密码不一致</string>
 	<string name="confirm_password">确认密码</string>
 	<string name="settings">设置</string>
+	<string name="input_new_pwd">请输入新密码</string>
+	<string name="confirm_button">确认</string>
+	<string name="answer_is_wrong">答案错误</string>
+	<string name="username_not_exist">用户名不存在</string>
+	<string name="password_reset_success">密码重置成功</string>
+	<string name="password_reset_fail">密码重置失败</string>
+	<string name="setting">设置</string>
+	<string name="add_friend">添加好友</string>
+	<string name="reset_pwd">重置密码</string>
+	<string name="cannot_show_question">无法显示验证问题</string>
+	<string name="last_day">上一天</string>
+	<string name="next_day">下一天</string>
+	<string name="track">足迹</string>
+	<string name="get_track_fail">获取足迹信息错误</string>
+	<string name="none_track">无足迹信息</string>
 </resources>

@@ -1,11 +1,16 @@
 package njupt.stitp.android.model;
 
-public class Track {
+import java.io.Serializable;
 
+public class Track implements Serializable {
+
+	private static final long serialVersionUID = -758459502806858414L;
 	private String username;
 	private double longitude;
 	private double latitude;
+	//addTime格式为2015-10-15 10:20:00
 	private String addTime;
+	private String address;
 
 	public String getUsername() {
 		return username;
@@ -37,6 +42,14 @@ public class Track {
 
 	public void setAddTime(String addTime) {
 		this.addTime = addTime;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 }

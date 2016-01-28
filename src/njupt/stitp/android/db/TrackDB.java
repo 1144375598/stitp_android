@@ -1,8 +1,12 @@
 package njupt.stitp.android.db;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import njupt.stitp.android.R.string;
 import njupt.stitp.android.model.Track;
 import android.content.ContentValues;
 import android.content.Context;
@@ -66,5 +70,58 @@ public class TrackDB {
 					"update track set isCommit = 0 where addTime=? and username=?",
 					new String[] { track.getAddTime(), track.getUsername() });
 		}
+	}
+
+	public void delete(String username, Date date) {
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+		String temp=format.format(date);
+		String start=temp+" 00:00:00";
+		String end=temp+" 23:59:59";
+		wdb.execSQL("delete from track where username=? and addTime between ? and ?",
+				new String[] { username, start,end });
+	}
+
+	public void dropThenAddTracks(List<Track> tracks,int isCommit) {
+		if (tracks.size() > 0) {
+			String username=tracks.get(0).getUsername();
+			String dateString=tracks.get(0).getAddTime();
+			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date =null;
+			try {
+				date = format.parse(dateString);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			delete(username, date);
+			addTracks(tracks, isCommit);
+		}
+	}
+
+	public List<Track> getTracks(String username, Date date) {
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+		String temp=format.format(date);
+		String start=temp+" 00:00:00";
+		String end=temp+" 23:59:59";
+		List<Track> tracks = new ArrayList<Track>();
+		Cursor cursor = rdb.rawQuery(
+				"select * from track where username=? and addTime between ? and ?",
+				new String[] { username, start,end });
+		if (cursor.moveToFirst()) {
+			do {
+				Track track = new Track();
+				track.setAddTime(cursor.getString(cursor
+						.getColumnIndex("addTime")));
+				track.setLatitude(cursor.getDouble(cursor
+						.getColumnIndex("latitude")));
+				track.setLongitude(cursor.getDouble(cursor
+						.getColumnIndex("longitude")));
+				track.setUsername(cursor.getString(cursor
+						.getColumnIndex("username")));
+				track.setAddress(cursor.getString(cursor
+						.getColumnIndex("address")));
+				tracks.add(track);
+			} while (cursor.moveToNext());
+		} 
+		return tracks;
 	}
 }

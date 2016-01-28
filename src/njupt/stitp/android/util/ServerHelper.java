@@ -5,12 +5,17 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.protocol.HTTP;
 
 import com.google.gson.Gson;
 
@@ -21,7 +26,7 @@ import njupt.stitp.android.model.APP;
 import njupt.stitp.android.model.Track;
 
 public class ServerHelper {
-	private static final String base = "http://192.168.191.4:8080/NJUPT_STITP_Server/";
+	private static final String base = "http://192.168.1.107:8080/NJUPT_STITP_Server/";
 
 	public String getResult(String path, Map<String, String> params) {
 		StringBuffer buffer = new StringBuffer();
@@ -32,6 +37,7 @@ public class ServerHelper {
 			}
 			buffer.deleteCharAt(buffer.length() - 1);
 		}
+
 		try {
 			URL url = new URL(base + path);
 			HttpURLConnection connection = (HttpURLConnection) url
@@ -41,9 +47,9 @@ public class ServerHelper {
 			connection.setReadTimeout(8000);
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			DataOutputStream out = new DataOutputStream(
-					connection.getOutputStream());
-			out.writeBytes(buffer.toString());
+			byte[] bytes=buffer.toString().getBytes();
+			OutputStream out = connection.getOutputStream();
+			out.write(bytes);
 			if (connection.getResponseCode() == 200) {
 				InputStream in = connection.getInputStream();
 				BufferedReader reader = new BufferedReader(
@@ -67,14 +73,15 @@ public class ServerHelper {
 		return null;
 	}
 
-
-	public boolean uploadTrackAndAPP(String path, List<Track> tracks,List<APP> apps) {
-		String info;
-		if(tracks!=null){
-			info=new Gson().toJson(tracks).toString();
-		}else if(apps!=null){
-			info=new Gson().toJson(apps).toString();
-		}else{
+	public boolean uploadTrackAndAPP(String path, List<Track> tracks,
+			List<APP> apps) {
+		StringBuffer buffer=new StringBuffer();
+		buffer.append("info =");
+		if (tracks != null) {
+			buffer.append(new Gson().toJson(tracks).toString());
+		} else if (apps != null) {
+			buffer.append(new Gson().toJson(apps).toString());
+		} else {
 			return false;
 		}
 		try {
@@ -86,9 +93,9 @@ public class ServerHelper {
 			connection.setReadTimeout(8000);
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			DataOutputStream out = new DataOutputStream(
-					connection.getOutputStream());
-			out.writeBytes("info =" + info);
+			byte[] bytes=buffer.toString().getBytes();
+			OutputStream out = connection.getOutputStream();
+			out.write(bytes);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

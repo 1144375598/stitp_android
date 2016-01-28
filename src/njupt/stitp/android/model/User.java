@@ -7,10 +7,27 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String username;
 	private String password;
-	// 以分钟计时
 	private int timeOfContinuousUse;
 	private int timeOfContinuousListen;
 	private String channel_id;
+	private String question;
+	private String answer;
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+
+	public String getAnswer() {
+		return answer;
+	}
+
+	public void setAnswer(String answer) {
+		this.answer = answer;
+	}
 
 	public String getUsername() {
 		return username;

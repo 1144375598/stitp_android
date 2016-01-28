@@ -10,7 +10,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	private static final String CREATE_USER = "CREATE table  user" + "("
 			+ "username text primary key," + "password text,"
 			+ "timeOfContinuousUse integer,"
-			+ "timeOfContinuousListen integer," + "channelId  text," + ")";
+			+ "timeOfContinuousListen integer," + "channelId  text,"
+			+ "question text" + "answer text" + ")";
 
 	private static final String CREATE_USETIMECONTROL = "CREATE table  usetimeControl"
 			+ "( "
@@ -30,7 +31,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
 	private static final String CREATE_TRACK = "create table  track( " + /* "IF NOT EXISTS" */
 	"id integer primary key autoincrement," + "username text,"
-			+ "longitude rear," + "latitude rear," + "addTime text," + "isCommit integer)";
+			+ "longitude rear," + "latitude rear," + "addTime text,"
+			+ "isCommit integer"+"address text)";
 
 	private static final String CREATE_MESSAGE = "create table IF NOT EXISTS message( "
 			+ "id integer primary key autoincrement,"
@@ -43,11 +45,12 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
 	public static int version = 1;
 	private Context mContext;
+
 	public DBOpenHelper(Context context) {
 		super(context, name, null, version);
-		mContext=context;
+		mContext = context;
 	}
-	
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_USER);
@@ -56,7 +59,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 		db.execSQL(CREATE_RELATIONSHIP);
 		db.execSQL(CREATE_TRACK);
 		db.execSQL(CREATE_MESSAGE);
-		db.execSQL(CREATE_APP);		
+		db.execSQL(CREATE_APP);
 	}
 
 	@Override
