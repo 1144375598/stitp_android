@@ -1,10 +1,13 @@
 package njupt.stitp.android.model;
 
+
+
 public class APP {
 	private String username;
-	private int appUseTime;  //�Է���Ϊ��λ
+	private int appUseTime; // 以分钟为单位
 	private String appName;
-	private String date;
+	private String addDate; //格式为2015-10-20
+	private byte[] icon;
 
 	public String getUsername() {
 		return username;
@@ -30,12 +33,23 @@ public class APP {
 		this.appName = appName;
 	}
 
-	public String getDate() {
-		return date;
+	public String getAddDate() {
+		return addDate;
 	}
 
-	public void setDate(String date) {
-		this.date = date;
+	public void setAddDate(String addDate) {
+		this.addDate = addDate;
 	}
+
+	public byte[] getIcon() {
+		return icon;
+	}
+
+	public void setIcon(byte[] icon) {
+		this.icon = icon;
+	}
+
+
+
 
 }

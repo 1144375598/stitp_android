@@ -1,14 +1,10 @@
 package njupt.stitp.android.activity;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import njupt.stitp.android.R;
-import njupt.stitp.android.db.UserDB;
-import njupt.stitp.android.model.User;
-import njupt.stitp.android.service.GetAPPMsgService;
-import njupt.stitp.android.service.TrackService;
+import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
@@ -18,7 +14,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -41,15 +36,11 @@ public class LoginActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		MyActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.activity_login);
 		sPHelper = new SPHelper();
 		if (!sPHelper.getInfo(getApplicationContext(), "userInfo", "username")
-				.equals("")) {
-			Intent intent1 = new Intent(LoginActivity.this,
-					GetAPPMsgService.class);
-			startService(intent1);
-			intent1=new Intent(LoginActivity.this,TrackService.class);
-			startService(intent1);
+				.equals("")) {			
 			Intent intent = new Intent(LoginActivity.this,
 					FunctionActivity.class);
 			username=sPHelper.getInfo(getApplicationContext(), "userInfo", "username");
@@ -131,7 +122,7 @@ public class LoginActivity extends Activity {
 						params.put("user.password", password);
 						String result = new ServerHelper().getResult(path,
 								params);
-						int result_code = JsonUtil.LoginAndRegister(result);
+						int result_code = JsonUtil.getResultCode(result);
 						Message message = new Message();
 						message.what = result_code;
 						handler.sendMessage(message);
@@ -157,16 +148,13 @@ public class LoginActivity extends Activity {
 				case 0:
 					Toast.makeText(LoginActivity.this,
 							getString(R.string.login_success),
-							Toast.LENGTH_LONG).show();
+							Toast.LENGTH_SHORT).show();
 					
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("username", username);
 					sPHelper.saveInfo(getApplicationContext(), "userInfo",
-							params);
+							params);					
 					Intent intent = new Intent(LoginActivity.this,
-							GetAPPMsgService.class);
-					startService(intent);
-					intent = new Intent(LoginActivity.this,
 							FunctionActivity.class);
 					intent.putExtra("username", username);
 					startActivity(intent);
@@ -174,17 +162,17 @@ public class LoginActivity extends Activity {
 				case 1:
 					Toast.makeText(LoginActivity.this,
 							getString(R.string.username_error),
-							Toast.LENGTH_LONG).show();
+							Toast.LENGTH_SHORT).show();
 					break;
 				case 2:
 					Toast.makeText(LoginActivity.this,
 							getString(R.string.user_not_exist),
-							Toast.LENGTH_LONG).show();
+							Toast.LENGTH_SHORT).show();
 					break;
 				case -1:
 					Toast.makeText(LoginActivity.this,
 							getString(R.string.connect_server_fail),
-							Toast.LENGTH_LONG).show();
+							Toast.LENGTH_SHORT).show();
 					break;
 				case -2:
 					etusername.requestFocus();

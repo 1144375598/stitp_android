@@ -5,6 +5,7 @@ import java.util.Map;
 
 import njupt.stitp.android.R;
 import njupt.stitp.android.service.GetAPPMsgService;
+import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
@@ -42,6 +43,7 @@ public class RegisterActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		MyActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.activity_register);
 		init();
 		registerButton.setOnClickListener(new OnClickListener() {
@@ -90,7 +92,7 @@ public class RegisterActivity extends ActionBarActivity {
 						params.put("user.answer", answer);
 						String result = new ServerHelper().getResult(path,
 								params);
-						int result_code = JsonUtil.LoginAndRegister(result);
+						int result_code = JsonUtil.getResultCode(result);
 						Message message = new Message();
 						message.what = result_code;
 						handler.sendMessage(message);
@@ -132,6 +134,7 @@ public class RegisterActivity extends ActionBarActivity {
 					startService(intent);
 					intent = new Intent(RegisterActivity.this,
 							FunctionActivity.class);
+					intent.putExtra("username", username);
 					startActivity(intent);
 					break;
 				case 1:

@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.EdgeEffect;
 
 public class TrackDB {
 	private DBOpenHelper helper;
@@ -20,18 +21,22 @@ public class TrackDB {
 
 	public TrackDB(Context context) {
 		helper = new DBOpenHelper(context);
-		rdb = helper.getReadableDatabase();
-		wdb = helper.getWritableDatabase();
+		/*rdb = helper.getReadableDatabase();
+		wdb = helper.getWritableDatabase();*/
 	}
 
 	public void addTrack(Track track, int isCommit) {
+		wdb = helper.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put("username", track.getUsername());
-		values.put("longtitude", track.getLongitude());
+		values.put("longitude", track.getLongitude());
 		values.put("latitude", track.getLatitude());
 		values.put("addTime", track.getAddTime());
+		values.put("stayTime", track.getStayTime());
+		values.put("address", track.getAddress());
 		values.put("isCommit", isCommit);
 		wdb.insert("track", null, values);
+		wdb.close();
 	}
 
 	// isCommit为0表示已提交至服务器，为1表示未提交至服务器，为2表示是从服务器下载的轨迹
@@ -42,6 +47,7 @@ public class TrackDB {
 	}
 
 	public List<Track> getUncommitTrack(String username) {
+		rdb = helper.getReadableDatabase();
 		List<Track> list = new ArrayList<Track>();
 		Cursor cursor = rdb.rawQuery(
 				"select * from track where username=? and isCommit = 1",
@@ -57,28 +63,37 @@ public class TrackDB {
 						.getColumnIndex("longitude")));
 				track.setUsername(cursor.getString(cursor
 						.getColumnIndex("username")));
+				track.setAddress(cursor.getString(cursor
+						.getColumnIndex("address")));
+				track.setStayTime(cursor.getInt(cursor
+						.getColumnIndex("stayTime")));
 				list.add(track);
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		rdb.close();
 		return list;
 	}
 
 	public void updateTrack(List<Track> tracks) {
+		wdb = helper.getWritableDatabase();
 		for (Track track : tracks) {
 			wdb.execSQL(
 					"update track set isCommit = 0 where addTime=? and username=?",
 					new String[] { track.getAddTime(), track.getUsername() });
 		}
+		wdb.close();
 	}
 
 	public void delete(String username, Date date) {
+		wdb = helper.getWritableDatabase();
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 		String temp=format.format(date);
 		String start=temp+" 00:00:00";
 		String end=temp+" 23:59:59";
 		wdb.execSQL("delete from track where username=? and addTime between ? and ?",
 				new String[] { username, start,end });
+		wdb.close();
 	}
 
 	public void dropThenAddTracks(List<Track> tracks,int isCommit) {
@@ -98,6 +113,7 @@ public class TrackDB {
 	}
 
 	public List<Track> getTracks(String username, Date date) {
+		rdb = helper.getReadableDatabase();
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 		String temp=format.format(date);
 		String start=temp+" 00:00:00";
@@ -119,9 +135,13 @@ public class TrackDB {
 						.getColumnIndex("username")));
 				track.setAddress(cursor.getString(cursor
 						.getColumnIndex("address")));
+				track.setStayTime(cursor.getInt(cursor
+						.getColumnIndex("stayTime")));
 				tracks.add(track);
 			} while (cursor.moveToNext());
 		} 
+		cursor.close();
+		rdb.close();
 		return tracks;
 	}
 }

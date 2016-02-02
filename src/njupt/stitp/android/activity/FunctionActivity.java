@@ -10,8 +10,14 @@ import com.baidu.android.pushservice.PushManager;
 import njupt.stitp.android.R;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.User;
+import njupt.stitp.android.service.GetAPPMsgService;
+import njupt.stitp.android.service.TrackService;
+import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.ServerHelper;
+import nu.xom.Builder;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -20,6 +26,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.Spinner;
@@ -33,32 +42,39 @@ public class FunctionActivity extends ActionBarActivity {
 	private Button chat;
 	private String path;
 	private String username;
+	private List<String> names;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		MyActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.activity_function);
 		init();
-		// 获取孩子和自己信息
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				path = "user/getChild";
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("user.username", username);
-				String result = new ServerHelper().getResult(path, params);
-				List<User> childs = JsonUtil.getChild(result);
-				if (childs != null) {
-					new UserDB(getApplicationContext()).addUsers(childs);
+		startServices();
+		// 如果数据库中无数据，则获取孩子和自己信息
+		if (new UserDB(getApplicationContext()).getUser(username) != null) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					path = "user/getChild";
+					Map<String, String> params = new HashMap<String, String>();
+					params.put("user.username", username);
+					String result = new ServerHelper().getResult(path, params);
+					List<User> childs = JsonUtil.getChild(result);
+					if (childs != null) {
+						new UserDB(getApplicationContext()).addUsers(childs,
+								username);
+					}
+					path = "user/getUser";
+					result = new ServerHelper().getResult(path, params);
+					User user = JsonUtil.getUser(result);
+					if (user != null) {
+						new UserDB(getApplicationContext()).addUser(user, null);
+					}
 				}
-				path = "user/getUser";
-				result = new ServerHelper().getResult(path, params);
-				User user = JsonUtil.getUser(result);
-				if (user != null) {
-					new UserDB(getApplicationContext()).addUser(user);
-				}
-			}
-		}).start();
+			}).start();
+		}
+		initSpinner();
 		track.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -75,6 +91,7 @@ public class FunctionActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				Intent intent = new Intent(FunctionActivity.this,
 						AppActivity.class);
+				intent.putExtra("username", username);
 				startActivity(intent);
 			}
 		});
@@ -84,6 +101,7 @@ public class FunctionActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				Intent intent = new Intent(FunctionActivity.this,
 						UseControlActivity.class);
+				intent.putExtra("username", username);
 				startActivity(intent);
 			}
 		});
@@ -93,7 +111,20 @@ public class FunctionActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				Intent intent = new Intent(FunctionActivity.this,
 						ChatActivity.class);
+				intent.putExtra("username", username);
 				startActivity(intent);
+			}
+		});
+		selectChild.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
 	}
@@ -109,6 +140,25 @@ public class FunctionActivity extends ActionBarActivity {
 		chat = (Button) findViewById(R.id.function_chat);
 		PushManager.startWork(getApplicationContext(),
 				PushConstants.LOGIN_TYPE_API_KEY, " ebI4sTvwMxkiayc62NCO3NwR");
+	}
+
+	private void initSpinner() {
+		names = new UserDB(getApplicationContext()).getChildNames(username);
+		names.add(username);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+				FunctionActivity.this, android.R.layout.simple_spinner_item,
+				names);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		selectChild.setAdapter(adapter);
+		selectChild.setVisibility(View.VISIBLE);
+	}
+
+	private void startServices() {
+		Intent intent1 = new Intent(FunctionActivity.this,
+				GetAPPMsgService.class);
+		startService(intent1);
+		intent1 = new Intent(FunctionActivity.this, TrackService.class);
+		startService(intent1);
 	}
 
 	@Override
@@ -134,5 +184,24 @@ public class FunctionActivity extends ActionBarActivity {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onBackPressed() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				FunctionActivity.this);
+		builder.setTitle(R.string.prompt)
+				.setIconAttribute(android.R.attr.alertDialogIcon)
+				.setMessage(R.string.sure_exit)
+				.setPositiveButton(R.string.confirm_button,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+								MyActivityManager.getInstance().finshAllActivities();
+							}
+						}).setNegativeButton(R.string.cancel, null).create()
+				.show();
 	}
 }

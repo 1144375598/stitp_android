@@ -1,33 +1,30 @@
 package njupt.stitp.android.util;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.protocol.HTTP;
+import net.sf.json.JSONObject;
+import njupt.stitp.android.model.APP;
+import njupt.stitp.android.model.APPDto;
+import njupt.stitp.android.model.Track;
+import android.util.Base64;
+import android.util.Log;
 
 import com.google.gson.Gson;
-
-import android.R.integer;
-import android.util.Log;
-import njupt.stitp.android.activity.LoginActivity;
-import njupt.stitp.android.model.APP;
-import njupt.stitp.android.model.Track;
 
 public class ServerHelper {
 	private static final String base = "http://192.168.1.107:8080/NJUPT_STITP_Server/";
 
+	// 服务器无返回结果则返回状态代码，有返回值则返回json字符串
 	public String getResult(String path, Map<String, String> params) {
 		StringBuffer buffer = new StringBuffer();
 		if (params != null && !params.isEmpty()) {
@@ -47,7 +44,7 @@ public class ServerHelper {
 			connection.setReadTimeout(8000);
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			byte[] bytes=buffer.toString().getBytes();
+			byte[] bytes = buffer.toString().getBytes();
 			OutputStream out = connection.getOutputStream();
 			out.write(bytes);
 			if (connection.getResponseCode() == 200) {
@@ -73,14 +70,27 @@ public class ServerHelper {
 		return null;
 	}
 
+	// 上传成功返回true，失败返回false
 	public boolean uploadTrackAndAPP(String path, List<Track> tracks,
 			List<APP> apps) {
-		StringBuffer buffer=new StringBuffer();
+		StringBuffer buffer = new StringBuffer();
 		buffer.append("info =");
 		if (tracks != null) {
-			buffer.append(new Gson().toJson(tracks).toString());
+			buffer.append(new Gson().toJson(tracks));
 		} else if (apps != null) {
-			buffer.append(new Gson().toJson(apps).toString());
+			//将icon的byte[]转换为base64字符串上传
+			List<APPDto> appDtos = new ArrayList<APPDto>();
+			for (APP app : apps) {
+				APPDto appDto = new APPDto();
+				appDto.setAddDate(app.getAddDate());
+				appDto.setAppName(app.getAppName());
+				appDto.setAppUseTime(app.getAppUseTime());
+				appDto.setUsername(app.getUsername());
+				appDto.setIcon(Base64.encodeToString(app.getIcon(),
+						Base64.URL_SAFE | Base64.NO_WRAP));
+				appDtos.add(appDto);
+			}
+			buffer.append(new Gson().toJson(appDtos));
 		} else {
 			return false;
 		}
@@ -93,9 +103,14 @@ public class ServerHelper {
 			connection.setReadTimeout(8000);
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			byte[] bytes=buffer.toString().getBytes();
+			byte[] bytes = buffer.toString().getBytes();
 			OutputStream out = connection.getOutputStream();
 			out.write(bytes);
+			if (connection.getResponseCode() == 200) {
+				return true;
+			} else {
+				return false;
+			}
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

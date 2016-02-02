@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.Activity;
@@ -38,6 +39,7 @@ public class ResetPwdActivity extends ActionBarActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		MyActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.activity_resetpwd);
 		init();
 		confirm.setOnClickListener(new OnClickListener() {
