@@ -1,54 +1,112 @@
 <resources>
 
     <string name="app_name">青少年保护软件</string>
+
+    <!-- LoginActivity -->
     <string name="input_username">请输入用户名</string>
     <string name="input_password">请输入密码</string>
     <string name="login">登录</string>
     <string name="register">没有账号，注册一个>></string>
-    <string name="validation_question">请输入验证问题</string>
-    <string name="validation_answer">请输入验证问题答案</string>
-    <string name="question_is_null">对不起，验证问题不能为空</string>
-    <string name="answer_is_null">对不起，验证问题答案不能为空</string>
     <string name="forget_password">忘记密码?</string>
     <string name="loginProgress_title">登录中</string>
     <string name="loginProgress_message">登录中，马上就好</string>
-    <string name="username_is_null">对不起，用户名不能为空</string>
-    <string name="password_is_null">对不起，密码不能为空</string>
     <string name="login_success">登录成功!</string>
     <string name="username_error">登录失败，用户名或密码错误</string>
     <string name="user_not_exist">登录失败，用户名不存在</string>
     <string name="connect_server_fail">登录失败，连接服务器出错</string>
+    <string name="username_is_null">对不起，用户名不能为空</string>
+    <string name="password_is_null">对不起，密码不能为空</string>
+
+    <!-- RegisterActivity -->
+    <string name="validation_question">请输入验证问题</string>
+    <string name="validation_answer">请输入验证问题答案</string>
+    <string name="question_is_null">对不起，验证问题不能为空</string>
+    <string name="answer_is_null">对不起，验证问题答案不能为空</string>
     <string name="register_set_username">请输入用户名：</string>
     <string name="register_set_password">设置密码：</string>
     <string name="register_button">注册</string>
     <string name="register_upload_message">上传数据中</string>
-    <string name="register_wait">请稍等...</string>
+    <string name="register_wait">请稍等&#8230;</string>
     <string name="register_success">注册成功,开始登录....!</string>
     <string name="register_fail">注册失败，用户名已存在</string>
-    <string name="password_is_different">密码不一致</string>
     <string name="confirm_password">确认密码</string>
-    <string name="settings">设置</string>
+    <string name="password_is_different">密码不一致</string>
+
+    <!-- ResetPwdActivity -->
     <string name="input_new_pwd">请输入新密码</string>
-    <string name="confirm_button">确认</string>
     <string name="answer_is_wrong">答案错误</string>
     <string name="username_not_exist">用户名不存在</string>
     <string name="password_reset_success">密码重置成功</string>
     <string name="password_reset_fail">密码重置失败</string>
-    <string name="add_friend">添加好友</string>
-    <string name="reset_pwd">重置密码</string>
     <string name="cannot_show_question">无法显示验证问题</string>
+    <string name="reset_pwd">重置密码</string>
+
+    <!-- TrackActivity -->
     <string name="last_day">上一天</string>
     <string name="next_day">下一天</string>
     <string name="track">足迹</string>
     <string name="get_track_fail">获取足迹信息错误</string>
     <string name="none_track">无足迹信息</string>
     <string name="now_location">当前位置</string>
+    <string name="add_geo">添加位置提醒</string>
+    <string name="geo_list">位置提醒列表</string>
+    <string name="input_geo_name">请输入位置提醒名称</string>
+    <string name="input_geo_range">请输入提醒范围</string>
+    <string name="geo_range_unit">米</string>
+    <string name="save">保存</string>
+
+    <!-- AppInfoActivity -->
     <string name="refresh">刷新</string>
     <string name="app_use_msg">使用详情</string>
     <string name="get_appmsg_fail">获取信息出错</string>
     <string name="none_appmsg">无使用信息</string>
+    <string name="password_wrong">密码错误</string>
+
+    <!-- FunctionActivity -->
+    <string name="function_track">轨迹定位</string>
+    <string name="function_appinfo">使用详情</string>
+    <string name="function_lock">锁屏计划</string>
+    <string name="function_chat">即时聊天</string>
     <string name="prompt">提示</string>
     <string name="sure_exit">确定要退出吗?</string>
+    <string name="confirm_button">确定</string>
     <string name="cancel">取消</string>
+    <string name="add_friend">添加好友</string>
+    <string name="other_function">其他功能</string>
+
+    <!-- otherFunctionActivity -->
+    <string name="voice_control">音量控制</string>
+    <string name="lock_screen">一键锁屏</string>
+    <string name="set_lock_pwd">设置锁屏密码</string>
+    <string name="bump_remind">颠簸提醒</string>
+    <string name="continue_use_time">连续使用时长</string>
+    <string name="logout">退出账户</string>
+    <string name="text_on">ON</string>
+    <string name="text_off">OFF</string>
+    <string name="lock_success">锁屏成功</string>
+    <string name="lock_fail">锁屏失败</string>
+    <string name="unlock_success">解锁成功</string>
+    <string name="unlock_fail">解锁失败</string>
+    <string name="not_set_pwd">未设置</string>
+
+    <!-- lock_dial -->
+    <string name="back">返回</string>
+    <string name="call">呼叫</string>
+    <string name="num_0">0</string>
+    <string name="num_1">1</string>
+    <string name="num_2">2</string>
+    <string name="num_3">3</string>
+    <string name="num_4">4</string>
+    <string name="num_5">5</string>
+    <string name="num_6">6</string>
+    <string name="num_7">7</string>
+    <string name="num_8">8</string>
+    <string name="num_9">9</string>
+    
+    <!-- dialog -->
+    <string name="voice_unit">%</string>
+    <string name="dialog_set_voice">设置提醒音量</string>
+    <string name="set_voice_wrong">音量设置错误</string>
+    <string name="dialog_set_lockpwd">输入锁屏密码(于当前锁屏结束后生效)</string>
 
 </resources>

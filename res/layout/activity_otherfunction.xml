@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include layout="@layout/include_selectchild" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:paddingLeft="10.0dip"
+        android:paddingRight="10.0dip"
+        android:paddingTop="10.0dip" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="44.0dip"
+            android:layout_marginTop="15.0dip"
+            android:background="@drawable/common_strip_setting_middle"
+            android:clickable="false"
+            android:focusable="false" >
+
+            <TextView
+                android:id="@+id/voice_control"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="12.0dip"
+                android:duplicateParentState="true"
+                android:gravity="center_vertical"
+                android:text="@string/voice_control" />
+
+            <Switch
+                android:id="@+id/switch_voice_control"
+                android:layout_width="80dip"
+                android:layout_height="28dip"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8.0dip"
+                android:textOff="@string/text_off"
+                android:textOn="@string/text_on" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="44.0dip"
+            android:background="@drawable/common_strip_setting_middle"
+            android:clickable="false"
+            android:focusable="false" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="12.0dip"
+                android:duplicateParentState="true"
+                android:gravity="center_vertical"
+                android:text="@string/bump_remind" />
+
+            <Switch
+                android:id="@+id/switch_bump_remind"
+                android:layout_width="80dip"
+                android:layout_height="28dip"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8.0dip"
+                android:textOff="@string/text_off"
+                android:textOn="@string/text_on" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16.0dip"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44.0dip"
+                android:background="@drawable/common_strip_setting_middle"
+                android:clickable="true"
+                android:focusable="true" >
+
+                <TextView
+                    android:id="@+id/tv_lockscreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="12.0dip"
+                    android:background="#00000000"
+                    android:duplicateParentState="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/lock_screen" />
+
+                <Switch
+                    android:id="@+id/switch_lock_screen"
+                    android:layout_width="80dip"
+                    android:layout_height="28dip"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8.0dip"
+                    android:textOff="@string/text_off"
+                    android:textOn="@string/text_on" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44.0dip"
+                android:background="@drawable/common_strip_setting_middle"
+                android:clickable="true"
+                android:focusable="true" >
+
+                <TextView
+                    android:id="@+id/tv_set_lock_pwd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="12.0dip"
+                    android:background="#00000000"
+                    android:duplicateParentState="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/set_lock_pwd" />
+
+                <TextView
+                    android:id="@+id/tv_lock_pwd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8.0dip"
+                    android:background="#00000000"
+                    android:duplicateParentState="true"
+                    android:gravity="center_vertical" 
+                    android:minWidth="100dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="44.0dip"
+                android:background="@drawable/common_strip_setting_middle"
+                android:clickable="true"
+                android:focusable="true" >
+
+                <TextView
+                    android:id="@+id/tv_continue_use"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="12.0dip"
+                    android:background="#00000000"
+                    android:duplicateParentState="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/continue_use_time" />
+
+                <Switch
+                    android:id="@+id/switch_continue_use"
+                    android:layout_width="80dip"
+                    android:layout_height="28dip"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8.0dip"
+                    android:textOff="@string/text_off"
+                    android:textOn="@string/text_on" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/exit_app"
+            android:layout_width="fill_parent"
+            android:layout_height="46.0dip"
+            android:layout_marginBottom="20.0dip"
+            android:layout_marginTop="15.0dip"
+            android:background="@drawable/bg_button"
+            android:text="@string/logout"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+</LinearLayout>

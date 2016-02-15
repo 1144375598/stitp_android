@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="120dip"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_theme" >
+
+        <include layout="@layout/include_selectchild" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dip" >
+
+        <Chronometer
+            android:id="@+id/usetimeChronometer"
+            android:layout_width="150dip"
+            android:layout_height="150dip"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dip"
+            android:background="@drawable/bg_chronometer"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+           />
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout1"
+            android:layout_width="260dip"
+            android:layout_height="100dip"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal" >
+
+            <Button
+                android:id="@+id/function_location"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/btn_location" />
+
+            <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="50dip"
+                android:layout_height="30dip"
+                android:layout_below="@+id/function_location"
+                android:text="@string/function_track"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/function_findapp"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dip"
+                android:layout_toRightOf="@+id/function_location"
+                android:background="@drawable/btn_findapp" />
+
+            <Button
+                android:id="@+id/function_controltime"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="20dip"
+                android:layout_toLeftOf="@+id/function_chat"
+                android:background="@drawable/btn_controltime" />
+
+            <Button
+                android:id="@+id/function_chat"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:layout_above="@+id/textViewchat"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/btn_chat" />
+
+            <TextView
+                android:id="@+id/tv_findapp"
+                android:layout_width="50dip"
+                android:layout_height="30dip"
+                android:layout_alignBaseline="@+id/tv_location"
+                android:layout_alignBottom="@+id/tv_location"
+                android:layout_alignLeft="@+id/function_findapp"
+                android:text="@string/function_appinfo"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_controltime"
+                android:layout_width="50dip"
+                android:layout_height="30dip"
+                android:layout_alignBaseline="@+id/tv_findapp"
+                android:layout_alignBottom="@+id/tv_findapp"
+                android:layout_alignLeft="@+id/function_controltime"
+                android:text="@string/function_lock"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_chat"
+                android:layout_width="50dip"
+                android:layout_height="30dip"
+                android:layout_alignBaseline="@+id/tv_controltime"
+                android:layout_alignBottom="@+id/tv_controltime"
+                android:layout_alignParentRight="true"
+                android:text="@string/function_chat"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

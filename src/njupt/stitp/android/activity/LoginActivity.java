@@ -1,9 +1,13 @@
 package njupt.stitp.android.activity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
+import njupt.stitp.android.db.UserDB;
+import njupt.stitp.android.model.User;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.SPHelper;
@@ -40,11 +44,13 @@ public class LoginActivity extends Activity {
 		setContentView(R.layout.activity_login);
 		sPHelper = new SPHelper();
 		if (!sPHelper.getInfo(getApplicationContext(), "userInfo", "username")
-				.equals("")) {			
+				.equals("")) {
 			Intent intent = new Intent(LoginActivity.this,
 					FunctionActivity.class);
-			username=sPHelper.getInfo(getApplicationContext(), "userInfo", "username");
+			username = sPHelper.getInfo(getApplicationContext(), "userInfo",
+					"username");
 			intent.putExtra("username", username);
+			((MyApplication) getApplication()).setUsername(username);
 			startActivity(intent);
 		}
 		init();
@@ -149,14 +155,41 @@ public class LoginActivity extends Activity {
 					Toast.makeText(LoginActivity.this,
 							getString(R.string.login_success),
 							Toast.LENGTH_SHORT).show();
-					
+
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("username", username);
 					sPHelper.saveInfo(getApplicationContext(), "userInfo",
-							params);					
+							params);
+					// 如果数据库中无数据，则获取孩子和自己信息
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							UserDB userDB = new UserDB(getApplicationContext());
+
+							path = "user/getUser";
+							Map<String, String> params = new HashMap<String, String>();
+							params.put("user.username", username);
+							String result = new ServerHelper().getResult(path,
+									params);
+							User user = JsonUtil.getUser(result);
+							if (user != null) {
+								userDB.delete();
+								userDB.addUser(user, null);
+							}
+
+							path = "user/getChild";
+							result = new ServerHelper().getResult(path, params);
+							List<User> childs = JsonUtil.getChild(result);
+							if (childs != null) {
+								userDB.addUsers(childs, username);
+							}
+
+						}
+					}).start();
 					Intent intent = new Intent(LoginActivity.this,
 							FunctionActivity.class);
 					intent.putExtra("username", username);
+					((MyApplication) getApplication()).setUsername(username);
 					startActivity(intent);
 					break;
 				case 1:
@@ -185,4 +218,8 @@ public class LoginActivity extends Activity {
 		};
 	}
 
+	@Override
+	public void onBackPressed() {
+		MyActivityManager.getInstance().finshAllActivities();
+	}
 }

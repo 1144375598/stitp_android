@@ -6,9 +6,20 @@ public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String username;
+	private String lockPwd;//锁屏密码
 	private int timeOfContinuousUse;
 	private int timeOfContinuousListen;
 	private String channelId;
+	
+	
+
+	public String getLockPwd() {
+		return lockPwd;
+	}
+
+	public void setLockPwd(String lockPwd) {
+		this.lockPwd = lockPwd;
+	}
 
 	public String getUsername() {
 		return username;

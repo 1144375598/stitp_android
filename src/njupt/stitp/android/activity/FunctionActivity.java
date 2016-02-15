@@ -1,26 +1,21 @@
 package njupt.stitp.android.activity;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.baidu.android.pushservice.PushConstants;
-import com.baidu.android.pushservice.PushManager;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.UserDB;
-import njupt.stitp.android.model.User;
 import njupt.stitp.android.service.GetAPPMsgService;
+import njupt.stitp.android.service.MyService;
 import njupt.stitp.android.service.TrackService;
 import njupt.stitp.android.util.MyActivityManager;
-import njupt.stitp.android.util.JsonUtil;
-import njupt.stitp.android.util.ServerHelper;
-import nu.xom.Builder;
+import njupt.stitp.android.util.PushUtil;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +27,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.Spinner;
+
+import com.baidu.android.pushservice.PushConstants;
+import com.baidu.android.pushservice.PushManager;
 
 public class FunctionActivity extends ActionBarActivity {
 	private Spinner selectChild;
@@ -51,29 +49,7 @@ public class FunctionActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_function);
 		init();
 		startServices();
-		// 如果数据库中无数据，则获取孩子和自己信息
-		if (new UserDB(getApplicationContext()).getUser(username) != null) {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					path = "user/getChild";
-					Map<String, String> params = new HashMap<String, String>();
-					params.put("user.username", username);
-					String result = new ServerHelper().getResult(path, params);
-					List<User> childs = JsonUtil.getChild(result);
-					if (childs != null) {
-						new UserDB(getApplicationContext()).addUsers(childs,
-								username);
-					}
-					path = "user/getUser";
-					result = new ServerHelper().getResult(path, params);
-					User user = JsonUtil.getUser(result);
-					if (user != null) {
-						new UserDB(getApplicationContext()).addUser(user, null);
-					}
-				}
-			}).start();
-		}
+		
 		initSpinner();
 		track.setOnClickListener(new OnClickListener() {
 
@@ -138,8 +114,25 @@ public class FunctionActivity extends ActionBarActivity {
 		appInfo = (Button) findViewById(R.id.function_findapp);
 		useControl = (Button) findViewById(R.id.function_controltime);
 		chat = (Button) findViewById(R.id.function_chat);
+
+		useTime.setFormat("连续使用时长\n:%s");
+
+		// 百度云推送服务
 		PushManager.startWork(getApplicationContext(),
-				PushConstants.LOGIN_TYPE_API_KEY, " ebI4sTvwMxkiayc62NCO3NwR");
+				PushConstants.LOGIN_TYPE_API_KEY, PushUtil.getApiKey());
+	}
+
+	@Override
+	protected void onStart() {		
+		useTime.setBase(((MyApplication) getApplication()).getTime());
+		useTime.start();
+		super.onStart();
+	}
+
+	@Override
+	protected void onDestroy() {
+		useTime.stop();
+		super.onDestroy();
 	}
 
 	private void initSpinner() {
@@ -153,7 +146,7 @@ public class FunctionActivity extends ActionBarActivity {
 		selectChild.setVisibility(View.VISIBLE);
 	}
 
-	private void startServices() {
+	private void startServices() {	
 		Intent intent1 = new Intent(FunctionActivity.this,
 				GetAPPMsgService.class);
 		startService(intent1);
@@ -172,8 +165,8 @@ public class FunctionActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
-		case R.id.menu_item_setting:
-			intent = new Intent(FunctionActivity.this, SettingActivity.class);
+		case R.id.menu_item_function:
+			intent = new Intent(FunctionActivity.this, OtherFunctionActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.menu_item_addFriend:
@@ -199,7 +192,8 @@ public class FunctionActivity extends ActionBarActivity {
 							public void onClick(DialogInterface dialog,
 									int which) {
 								dialog.dismiss();
-								MyActivityManager.getInstance().finshAllActivities();
+								MyActivityManager.getInstance()
+										.finshAllActivities();
 							}
 						}).setNegativeButton(R.string.cancel, null).create()
 				.show();

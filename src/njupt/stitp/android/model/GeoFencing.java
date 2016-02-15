@@ -3,10 +3,36 @@ package njupt.stitp.android.model;
 public class GeoFencing {
 
 	private String username;
-	private double longtitude;
+	private double longitude;
 	private double latitude;
 	private double distance;
+	private String address;
+	private String geoName;
 	
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getGeoName() {
+		return geoName;
+	}
+
+	public void setGeoName(String geoName) {
+		this.geoName = geoName;
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -15,13 +41,7 @@ public class GeoFencing {
 		this.username = username;
 	}
 
-	public double getLongtitude() {
-		return longtitude;
-	}
 
-	public void setLongtitude(double longtitude) {
-		this.longtitude = longtitude;
-	}
 
 	public double getLatitude() {
 		return latitude;

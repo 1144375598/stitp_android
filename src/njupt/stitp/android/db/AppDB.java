@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import njupt.stitp.android.model.APP;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -65,5 +66,21 @@ public class AppDB {
 		cursor.close();
 		rdb.close();
 		return apps;
+	}
+	public void updateMessage(String name,List<APP> apps){
+		wdb=helper.getWritableDatabase();
+		if(apps!=null&&apps.size()>0){
+			wdb.execSQL("delete from app where username=? and addDate=?", new Object[]{name,apps.get(0).getAddDate()});
+			for(APP app:apps){
+				ContentValues values = new ContentValues();
+				values.put("username", app.getUsername());
+				values.put("appUseTime", app.getAppUseTime());
+				values.put("appName", app.getAppName());
+				values.put("addDate", app.getAddDate());
+				values.put("icon", app.getIcon());
+				wdb.insert("app", null, values);
+			}
+		}
+		wdb.close();
 	}
 }

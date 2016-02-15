@@ -10,6 +10,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="200dp"
         android:hint="@string/input_username"
+        android:singleLine="true"
         android:inputType="text" />
 
     <EditText
@@ -18,7 +19,8 @@
         android:layout_alignLeft="@id/etusername"
         android:layout_below="@id/etusername"
         android:hint="@string/input_password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword" 
+        android:singleLine="true"/>
 
     <Button
         android:id="@+id/login"

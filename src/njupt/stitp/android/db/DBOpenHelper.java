@@ -9,7 +9,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	private static String name = "stitp.db";
 	private static final String CREATE_USER = "CREATE table  user" + "("
 			+ "username text primary key," + "timeOfContinuousUse integer,"
-			+ "timeOfContinuousListen integer," + "channelId  text)";
+			+ "timeOfContinuousListen integer," + "channelId  text, lockPwd text)";
 
 	private static final String CREATE_USETIMECONTROL = "CREATE table  usetimeControl"
 			+ "( "
@@ -17,9 +17,16 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 			+ "username text,"
 			+ "start text," + "end text" + ")";
 
-	private static final String CREATE_GEOFENCING = "create table GeoFencing" + /* "create table IF NOT EXISTS GeoFencing" */
-	"( " + "username text  primary key," + "longtitude rear,"
-			+ "latitude rear," + "distance rear" + ")";
+	private static final String CREATE_GEOFENCING = "create table GeoFencing"
+			+ /* "create table IF NOT EXISTS GeoFencing" */
+			"( "
+			+ "username text,"
+			+ "longitude rear,"
+			+ "latitude rear,"
+			+ "distance rear, "
+			+ "address text,"
+			+ "geoName text,"
+			+ "primary key(username,longitude,latitude,distance))";
 
 	private static final String CREATE_RELATIONSHIP = "create table  relationship( "
 			+ "childname text,"
@@ -29,7 +36,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	private static final String CREATE_TRACK = "create table  track( "
 			+ "id integer primary key autoincrement," + "username text,"
 			+ "longitude rear," + "latitude rear," + "addTime text,"
-			+ "isCommit integer," + "address text,"+"stayTime integer)";
+			+ "isCommit integer," + "address text," + "stayTime integer)";
 
 	private static final String CREATE_MESSAGE = "create table IF NOT EXISTS message( "
 			+ "id integer primary key autoincrement,"
@@ -38,7 +45,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
 	public static final String CREATE_APP = "create table  app("
 			+ "username text, " + "appUseTime integer, " + "appName text,"
-			+ "addDate text ," + "icon blob ,"+"primary key(username,appname,addDate))";
+			+ "addDate text ," + "icon blob ,"
+			+ "primary key(username,appname,addDate))";
 
 	public static int version = 1;
 	private Context mContext;

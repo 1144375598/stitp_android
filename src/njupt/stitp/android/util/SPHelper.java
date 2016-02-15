@@ -27,4 +27,11 @@ public class SPHelper {
 		return preferences.getString(key, "");
 
 	}
+	public void clear(Context context, String preferencesName){
+		preferences = context.getSharedPreferences(preferencesName,
+				context.MODE_PRIVATE);
+		editor = preferences.edit();
+		editor.clear();
+		editor.commit();
+	}
 }

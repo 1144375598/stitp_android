@@ -26,6 +26,8 @@
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:name=".application.MyApplication"
@@ -36,6 +38,15 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ebI4sTvwMxkiayc62NCO3NwR" />
+
+        <receiver android:name=".receiver.LockReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_OFF" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="screen_on"/>
+                <action android:name="screen_off"/>
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activity.LoginActivity"
@@ -77,9 +88,26 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".avtivity.FunctionActivity" />
         </activity>
+        <activity android:name=".activity.GeoListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avtivity.TrackActivity" />
+        </activity>
+        <activity android:name=".activity.AddGeoActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avtivity.GeoListActivity" />
+        </activity>
+        <activity android:name=".activity.OtherFunctionActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avtivity.FunctionActivity" />
+        </activity>
 
         <service android:name=".service.GetAPPMsgService" />
         <service android:name=".service.TrackService" />
+        <service android:name=".service.MyService" />
+        
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"

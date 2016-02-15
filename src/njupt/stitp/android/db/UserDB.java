@@ -18,8 +18,10 @@ public class UserDB {
 
 	public UserDB(Context context) {
 		helper = new DBOpenHelper(context);
-/*		rdb = helper.getReadableDatabase();
-		wdb = helper.getWritableDatabase();*/
+		/*
+		 * rdb = helper.getReadableDatabase(); wdb =
+		 * helper.getWritableDatabase();
+		 */
 	}
 
 	public void delete() {
@@ -43,6 +45,7 @@ public class UserDB {
 		values.put("timeOfContinuousUse", user.getTimeOfContinuousUse());
 		values.put("timeOfContinuousListen", user.getTimeOfContinuousListen());
 		values.put("channelId", user.getChannelId());
+		values.put("lockPwd", user.getLockPwd());
 		wdb.insert("user", null, values);
 		if (username != null) {
 			ContentValues values2 = new ContentValues();
@@ -61,7 +64,7 @@ public class UserDB {
 	}
 
 	public List<String> getChildNames(String username) {
-		rdb=helper.getReadableDatabase();
+		rdb = helper.getReadableDatabase();
 		List<String> names = new ArrayList<String>();
 		Cursor cursor = rdb.rawQuery(
 				"select childname from relationship where parentname=?",
@@ -77,7 +80,7 @@ public class UserDB {
 	}
 
 	public User getUser(String username) {
-		rdb=helper.getReadableDatabase();
+		rdb = helper.getReadableDatabase();
 		User user = new User();
 		Cursor cursor = rdb.rawQuery("select * from user where username=?",
 				new String[] { username });
@@ -88,7 +91,8 @@ public class UserDB {
 			user.setTimeOfContinuousListen(cursor.getInt(cursor
 					.getColumnIndex("timeOfContinuousListen")));
 			user.setChannelId(cursor.getString(cursor
-					.getColumnIndex("channelId ")));
+					.getColumnIndex("channelId")));
+			user.setLockPwd(cursor.getString(cursor.getColumnIndex("lockPwd")));
 		} else {
 			cursor.close();
 			return null;
@@ -96,5 +100,13 @@ public class UserDB {
 		cursor.close();
 		rdb.close();
 		return user;
+	}
+
+	public void updateLockPwd(String username, String lockPwd) {
+		wdb = helper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put("lockPwd", lockPwd);
+		wdb.update("user", values, "username = ?", new String[] { username });
+		wdb.close();
 	}
 }

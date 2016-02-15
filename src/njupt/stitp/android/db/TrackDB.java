@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import njupt.stitp.android.R.string;
 import njupt.stitp.android.model.Track;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.EdgeEffect;
 
 public class TrackDB {
 	private DBOpenHelper helper;

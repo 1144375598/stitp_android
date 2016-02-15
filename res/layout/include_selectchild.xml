@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="86dp"
+    android:layout_gravity="top"
+    android:background="@drawable/bg_theme" >
+
+    <RelativeLayout
+        android:layout_width="225dip"
+        android:layout_height="80dip"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal" >
+
+        <Spinner
+            android:id="@+id/selectChild"
+            android:layout_width="wrap_content"
+            android:layout_height="40dip"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/headPicture" />
+
+        <ImageView
+            android:id="@+id/headPicture"
+            android:layout_width="80dip"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/bg_userpicture" />
+    </RelativeLayout>
+
+</RelativeLayout>
