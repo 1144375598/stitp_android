@@ -19,14 +19,13 @@ public class AppDB {
 
 	public AppDB(Context context) {
 		helper = new DBOpenHelper(context);
-		/*
-		 * rdb = helper.getReadableDatabase(); wdb =
-		 * helper.getWritableDatabase();
-		 */
+		
+		  rdb = helper.getReadableDatabase(); wdb =
+		 helper.getWritableDatabase();
+		 
 	}
 
 	public void saveMessage(String username, List<APP> runningApps) {
-		wdb = helper.getWritableDatabase();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
 		String dateString = format.format(date);
@@ -38,11 +37,9 @@ public class AppDB {
 			wdb.execSQL(update, new String[] { username, app.getAppName(),
 					dateString });
 		}
-		wdb.close();
 	}
 
 	public List<APP> getMessage(String username, Date addDate) {
-		rdb = helper.getReadableDatabase();
 		List<APP> apps = new ArrayList<APP>();
 		Cursor cursor = rdb.rawQuery(
 				"select * from app where username=? and addDate=?",
@@ -64,11 +61,9 @@ public class AppDB {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
-		rdb.close();
 		return apps;
 	}
 	public void updateMessage(String name,List<APP> apps){
-		wdb=helper.getWritableDatabase();
 		if(apps!=null&&apps.size()>0){
 			wdb.execSQL("delete from app where username=? and addDate=?", new Object[]{name,apps.get(0).getAddDate()});
 			for(APP app:apps){
@@ -81,6 +76,13 @@ public class AppDB {
 				wdb.insert("app", null, values);
 			}
 		}
-		wdb.close();
+	}
+	public void close(){
+		if(rdb!=null){
+			rdb.close();
+		}
+		if(wdb!=null){
+			wdb.close();
+		}
 	}
 }

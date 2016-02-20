@@ -1,12 +1,16 @@
 package njupt.stitp.android.activity;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
+import njupt.stitp.android.db.OptionDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.service.GetAPPMsgService;
-import njupt.stitp.android.service.MyService;
+import njupt.stitp.android.service.LockService;
+import njupt.stitp.android.service.ProtectEyeService;
 import njupt.stitp.android.service.TrackService;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.PushUtil;
@@ -14,8 +18,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
@@ -38,7 +43,6 @@ public class FunctionActivity extends ActionBarActivity {
 	private Button appInfo;
 	private Button useControl;
 	private Button chat;
-	private String path;
 	private String username;
 	private List<String> names;
 
@@ -49,7 +53,7 @@ public class FunctionActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_function);
 		init();
 		startServices();
-		
+
 		initSpinner();
 		track.setOnClickListener(new OnClickListener() {
 
@@ -115,16 +119,21 @@ public class FunctionActivity extends ActionBarActivity {
 		useControl = (Button) findViewById(R.id.function_controltime);
 		chat = (Button) findViewById(R.id.function_chat);
 
-		useTime.setFormat("连续使用时长\n:%s");
-
 		// 百度云推送服务
 		PushManager.startWork(getApplicationContext(),
 				PushConstants.LOGIN_TYPE_API_KEY, PushUtil.getApiKey());
 	}
 
+	public void setUseTime() {
+		useTime.setFormat("连续使用时间:\n %s");
+		long time = ((MyApplication) getApplication()).getTime();
+		long time2 = (new Date().getTime() - time);// 连续使用了多少毫秒
+		useTime.setBase(SystemClock.elapsedRealtime() - time2);
+	}
+
 	@Override
-	protected void onStart() {		
-		useTime.setBase(((MyApplication) getApplication()).getTime());
+	protected void onStart() {
+		setUseTime();
 		useTime.start();
 		super.onStart();
 	}
@@ -146,12 +155,28 @@ public class FunctionActivity extends ActionBarActivity {
 		selectChild.setVisibility(View.VISIBLE);
 	}
 
-	private void startServices() {	
+	private void startServices() {
 		Intent intent1 = new Intent(FunctionActivity.this,
 				GetAPPMsgService.class);
 		startService(intent1);
 		intent1 = new Intent(FunctionActivity.this, TrackService.class);
 		startService(intent1);
+		OptionDB optionDB = new OptionDB(this);
+		if (optionDB.getBumpRemind(username) == 1) {
+			intent1 = new Intent(this, ProtectEyeService.class);
+			intent1.setAction(ProtectEyeService.OPEN_BUMP_REMIND_ACTION);
+			startService(intent1);
+		}
+		if (optionDB.getContinueUse(username) == 1) {
+			intent1 = new Intent(this, ProtectEyeService.class);
+			intent1.setAction(ProtectEyeService.OPEN_CONTINUE_USE_ACTION);
+			startService(intent1);
+		}
+		if (optionDB.getLockScreen(username) == 1) {
+			intent1 = new Intent(this, LockService.class);
+			intent1.setAction(LockService.LOCK_ACTION);
+			startService(intent1);
+		}
 	}
 
 	@Override
@@ -166,7 +191,8 @@ public class FunctionActivity extends ActionBarActivity {
 		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.menu_item_function:
-			intent = new Intent(FunctionActivity.this, OtherFunctionActivity.class);
+			intent = new Intent(FunctionActivity.this,
+					OtherFunctionActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.menu_item_addFriend:

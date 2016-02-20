@@ -15,8 +15,8 @@ import java.util.Map;
 import njupt.stitp.android.model.APP;
 import njupt.stitp.android.model.APPDto;
 import njupt.stitp.android.model.Track;
+import njupt.stitp.android.model.UseTimeControl;
 import android.util.Base64;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -46,7 +46,6 @@ public class ServerHelper {
 			OutputStream out = connection.getOutputStream();
 			out.write(bytes);
 			Integer resultCode = connection.getResponseCode();
-			Log.i("resultCode", url + "***" + resultCode.toString());
 			if (resultCode == 200) {
 				InputStream in = connection.getInputStream();
 				BufferedReader reader = new BufferedReader(
@@ -56,8 +55,8 @@ public class ServerHelper {
 				while ((line = reader.readLine()) != null) {
 					response.append(line);
 				}
-				if (response.length() == 0) {
-					return resultCode.toString();
+				if (response.length() > 0) {
+					return response.toString();
 				}
 			}
 			return resultCode.toString();
@@ -91,6 +90,39 @@ public class ServerHelper {
 				appDtos.add(appDto);
 			}
 			buffer.append(new Gson().toJson(appDtos));
+		} else {
+			return false;
+		}
+		try {
+			URL url = new URL(base + path);
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setConnectTimeout(8000);
+			connection.setReadTimeout(8000);
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			byte[] bytes = buffer.toString().getBytes();
+			OutputStream out = connection.getOutputStream();
+			out.write(bytes);
+			if (connection.getResponseCode() == 200) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean uploadContolTime(String path, List<UseTimeControl> params) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("info =");
+		if (params != null) {
+			buffer.append(new Gson().toJson(params));
 		} else {
 			return false;
 		}

@@ -7,25 +7,25 @@ import android.widget.Toast;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
 	private static String name = "stitp.db";
+	private static final String CREATE_OPTION = "CREATE table option "
+			+ "(username text primary key , " + "lockScreen integer,"
+			+ "voiceControl integer," + "bumpRemind integer,"
+			+ "continueUse integer)";
 	private static final String CREATE_USER = "CREATE table  user" + "("
 			+ "username text primary key," + "timeOfContinuousUse integer,"
-			+ "timeOfContinuousListen integer," + "channelId  text, lockPwd text)";
+			+ "timeOfContinuousListen integer,"
+			+ "channelId  text, lockPwd text)";
 
-	private static final String CREATE_USETIMECONTROL = "CREATE table  usetimeControl"
+	private static final String CREATE_USETIMECONTROL = "CREATE table  useTimeControl"
 			+ "( "
-			+ "id integer primary key autoincrement,"
 			+ "username text,"
-			+ "start text," + "end text" + ")";
+			+ "start text,"
+			+ "end text,"
+			+ "primary key(username,start,end))";
 
-	private static final String CREATE_GEOFENCING = "create table GeoFencing"
-			+ /* "create table IF NOT EXISTS GeoFencing" */
-			"( "
-			+ "username text,"
-			+ "longitude rear,"
-			+ "latitude rear,"
-			+ "distance rear, "
-			+ "address text,"
-			+ "geoName text,"
+	private static final String CREATE_GEOFENCING = "create table GeoFencing" + /* "create table IF NOT EXISTS GeoFencing" */
+	"( " + "username text," + "longitude rear," + "latitude rear,"
+			+ "distance rear, " + "address text," + "geoName text,"
 			+ "primary key(username,longitude,latitude,distance))";
 
 	private static final String CREATE_RELATIONSHIP = "create table  relationship( "
@@ -65,6 +65,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 		db.execSQL(CREATE_TRACK);
 		db.execSQL(CREATE_MESSAGE);
 		db.execSQL(CREATE_APP);
+		db.execSQL(CREATE_OPTION);
 	}
 
 	@Override

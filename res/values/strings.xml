@@ -87,7 +87,30 @@
     <string name="lock_fail">锁屏失败</string>
     <string name="unlock_success">解锁成功</string>
     <string name="unlock_fail">解锁失败</string>
-    <string name="not_set_pwd">未设置</string>
+    <string name="not_set">未设置</string>
+    <string name="cannot_set_self">不可更改自己的设置</string>
+    <string name="set_continue_use_time">设置连续使用时长</string>
+    <string name="set_usetime_success">设置连续使用时间成功</string>
+    <string name="set_usetime_fail">设置连续使用时间失败</string>
+    <string name="open_usetime_success">打开连续使用提醒成功</string>
+    <string name="open_usetime_fail">打开连续使用提醒失败</string>
+    <string name="close_usetime_success">关闭连续使用提醒成功</string>
+    <string name="close_usetime_fail">关闭连续使用提醒失败</string>
+    <string name="open_bumpremind_success">打开颠簸提醒成功</string>
+    <string name="open_bumpremind_fail">打开颠簸提醒失败</string>
+    <string name="close_bumpremind_success">关闭颠簸提醒成功</string>
+    <string name="close_bumpremind_fail">关闭颠簸提醒失败</string>
+    <string name="open_voicecontrol_success">打开音量控制成功</string>
+    <string name="open_voicecontrol_fail">打开音量控制失败</string>
+    <string name="close_voicecontrol_success">关闭音量控制成功</string>
+    <string name="close_voicecontrol_fail">关闭音量控制失败</string>
+    <string name="voice_high">音量过高有损听力，已帮您降至百分之六十</string>
+    <string name="not_set_use_time">未设置连续使用时间</string>
+    <string name="time_out">连续使用时间过长，休息一会儿吧</string>
+    <string name="too_bump_to_use_phone">这么晃动，请不要玩手机了</string>
+    <string name="use_time_cannot_be_zero">连续使用时间不能为0</string>
+    <string name="set_lockpwd_success">设置锁屏密码成功</string>
+    <string name="set_lockpwd_fail">设置锁屏密码失败</string>
 
     <!-- lock_dial -->
     <string name="back">返回</string>
@@ -102,11 +125,15 @@
     <string name="num_7">7</string>
     <string name="num_8">8</string>
     <string name="num_9">9</string>
+	
+    <!-- UseControlActivity -->
+    <string name="add_controltime">新建</string>
     
     <!-- dialog -->
     <string name="voice_unit">%</string>
     <string name="dialog_set_voice">设置提醒音量</string>
     <string name="set_voice_wrong">音量设置错误</string>
     <string name="dialog_set_lockpwd">输入锁屏密码(于当前锁屏结束后生效)</string>
+    <string name="dialog_set_time">输入连续使用时间(分钟为单位)</string>
 
 </resources>

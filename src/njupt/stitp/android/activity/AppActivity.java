@@ -1,7 +1,6 @@
 package njupt.stitp.android.activity;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,8 +12,8 @@ import njupt.stitp.android.adapter.AppAdapter;
 import njupt.stitp.android.db.AppDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.APP;
-import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +44,7 @@ public class AppActivity extends ActionBarActivity {
 	private Date tempDate;
 	private String path;
 	private Handler handler;
+	AppDB appDB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +116,7 @@ public class AppActivity extends ActionBarActivity {
 		nextDay = (Button) findViewById(R.id.next_day);
 		lastDay = (Button) findViewById(R.id.last_day);
 		appMsgList = (ListView) findViewById(R.id.app_msg_list);
-
+		appDB = new AppDB(getApplicationContext());
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -173,7 +173,7 @@ public class AppActivity extends ActionBarActivity {
 	private void getApps(String name, Date date) {
 		tempDate = date;
 		tempName = name;
-		AppDB appDB = new AppDB(getApplicationContext());
+		
 		List<APP> apps = appDB.getMessage(name, date);
 		if (apps.size() == 0) {
 			new Thread(new Runnable() {
@@ -208,5 +208,10 @@ public class AppActivity extends ActionBarActivity {
 			msg.obj = apps;
 			handler.sendMessage(msg);
 		}
+	}
+	@Override
+	protected void onDestroy() {
+		appDB.close();
+		super.onDestroy();
 	}
 }

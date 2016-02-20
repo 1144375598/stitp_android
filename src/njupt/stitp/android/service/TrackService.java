@@ -157,7 +157,9 @@ public class TrackService extends Service {
 		if(tracks.size()>0){
 			trackDB.addTracks(tracks, 1);
 		}
-		//Log.i("info", "service stop");
+		if(trackDB!=null){
+			trackDB.close();
+		}
 		super.onDestroy();
 	}
 }

@@ -15,25 +15,22 @@ public class GeoDB {
 
 	public GeoDB(Context context) {
 		helper = new DBOpenHelper(context);
-		/*
-		 * rdb = helper.getReadableDatabase(); wdb =
-		 * helper.getWritableDatabase();
-		 */
+		
+		 rdb = helper.getReadableDatabase(); wdb =
+		  helper.getWritableDatabase();
+		 
 	}
 
 	public void saveGeo(String username, GeoFencing geoFencing) {
-		wdb = helper.getWritableDatabase();
 		String insert = "insert or ignore into GeoFencing(username,longitude,latitude,distance,address,geoName) values(?,?,?,?,?,?)";
 		wdb.execSQL(
 				insert,
 				new Object[] { username, geoFencing.getLongitude(),
 						geoFencing.getLatitude(), geoFencing.getDistance(),
 						geoFencing.getAddress(), geoFencing.getGeoName() });
-		wdb.close();
 	}
 
 	public List<GeoFencing> getGeos(String username) {
-		rdb = helper.getReadableDatabase();
 		List<GeoFencing> geoFencings = new ArrayList<GeoFencing>();
 		Cursor cursor = rdb.rawQuery(
 				"select * from GeoFencing where username=?",
@@ -57,7 +54,14 @@ public class GeoDB {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
-		rdb.close();
 		return geoFencings;
+	}
+	public void close(){
+		if(rdb!=null){
+			rdb.close();
+		}
+		if(wdb!=null){
+			wdb.close();
+		}
 	}
 }

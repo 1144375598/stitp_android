@@ -9,6 +9,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import njupt.stitp.android.model.APP;
 import njupt.stitp.android.model.Track;
+import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.model.User;
 import android.util.Base64;
 import android.util.Log;
@@ -113,8 +114,29 @@ public class JsonUtil {
 			app.setAppName(jsonApp.getString("appName"));
 			app.setAppUseTime(jsonApp.getInt("appUseTime"));
 			app.setUsername(jsonApp.getString("username"));
-			app.setIcon(Base64.decode(jsonApp.getString("icon"), Base64.URL_SAFE | Base64.NO_WRAP));
+			app.setIcon(Base64.decode(jsonApp.getString("icon"),
+					Base64.URL_SAFE | Base64.NO_WRAP));
 			list.add(app);
+		}
+		return list;
+	}
+
+	public static List<UseTimeControl> getUseControl(String json) {
+		if (json == null || json.isEmpty())
+			return null;
+		List<UseTimeControl> list = new ArrayList<UseTimeControl>();
+		JSONObject jsonObject = new JSONObject().fromString(json);
+		int result_code = jsonObject.getInt("result_code");
+		if (result_code == 1)
+			return null;
+		JSONArray result = jsonObject.getJSONArray("result");
+		for (int i = 0; i < result.length(); i++) {
+			JSONObject jsonTime = result.getJSONObject(i);
+			UseTimeControl useTimeControl = new UseTimeControl();
+			useTimeControl.setUsername(jsonTime.getString("username"));
+			useTimeControl.setStart(jsonTime.getString("start"));
+			useTimeControl.setEnd(jsonTime.getString("end"));
+			list.add(useTimeControl);
 		}
 		return list;
 	}

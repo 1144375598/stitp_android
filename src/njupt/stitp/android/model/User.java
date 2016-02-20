@@ -7,8 +7,8 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String username;
 	private String lockPwd;//锁屏密码
-	private int timeOfContinuousUse;
-	private int timeOfContinuousListen;
+	private int timeOfContinuousUse=0;  //分钟为单位
+	private int timeOfContinuousListen=0;
 	private String channelId;
 	
 	

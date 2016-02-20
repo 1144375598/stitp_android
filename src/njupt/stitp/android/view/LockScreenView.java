@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import njupt.stitp.android.R;
-import njupt.stitp.android.service.MyService;
+import njupt.stitp.android.service.LockService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -77,8 +77,8 @@ public class LockScreenView extends LinearLayout {
 		btnUnlock.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(mContext, MyService.class);
-				i.setAction(MyService.UNLOCK_ACTION);
+				Intent i = new Intent(mContext, LockService.class);
+				i.setAction(LockService.UNLOCK_ACTION);
 				mContext.startService(i);
 			}
 		});
@@ -86,8 +86,8 @@ public class LockScreenView extends LinearLayout {
 			
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(mContext, MyService.class);
-				i.setAction(MyService.DIAL_ACTION);
+				Intent i = new Intent(mContext, LockService.class);
+				i.setAction(LockService.DIAL_ACTION);
 				mContext.startService(i);
 				
 			}

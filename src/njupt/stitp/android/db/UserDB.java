@@ -3,8 +3,6 @@ package njupt.stitp.android.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.baidu.a.a.a.c;
-
 import njupt.stitp.android.model.User;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,16 +16,14 @@ public class UserDB {
 
 	public UserDB(Context context) {
 		helper = new DBOpenHelper(context);
-		/*
-		 * rdb = helper.getReadableDatabase(); wdb =
-		 * helper.getWritableDatabase();
-		 */
+		
+		  rdb = helper.getReadableDatabase(); wdb =
+		  helper.getWritableDatabase();
+		 
 	}
 
 	public void delete() {
-		wdb = helper.getWritableDatabase();
 		wdb.execSQL("delete from user");
-		wdb.close();
 	}
 
 	public void updateUser(List<User> list, String username) {
@@ -39,7 +35,6 @@ public class UserDB {
 
 	// username不为空表示插入的user为username的孩子
 	public void addUser(User user, String username) {
-		wdb = helper.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put("username", user.getUsername());
 		values.put("timeOfContinuousUse", user.getTimeOfContinuousUse());
@@ -53,7 +48,6 @@ public class UserDB {
 			values2.put("childname", user.getUsername());
 			wdb.insert("relationship", null, values2);
 		}
-		wdb.close();
 	}
 
 	// username不为空表示插入的user为username的孩子
@@ -64,7 +58,6 @@ public class UserDB {
 	}
 
 	public List<String> getChildNames(String username) {
-		rdb = helper.getReadableDatabase();
 		List<String> names = new ArrayList<String>();
 		Cursor cursor = rdb.rawQuery(
 				"select childname from relationship where parentname=?",
@@ -75,12 +68,10 @@ public class UserDB {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
-		rdb.close();
 		return names;
 	}
 
 	public User getUser(String username) {
-		rdb = helper.getReadableDatabase();
 		User user = new User();
 		Cursor cursor = rdb.rawQuery("select * from user where username=?",
 				new String[] { username });
@@ -98,15 +89,25 @@ public class UserDB {
 			return null;
 		}
 		cursor.close();
-		rdb.close();
 		return user;
 	}
 
 	public void updateLockPwd(String username, String lockPwd) {
-		wdb = helper.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put("lockPwd", lockPwd);
 		wdb.update("user", values, "username = ?", new String[] { username });
-		wdb.close();
+	}
+	public void updateContinueUse(String username,int useTime){
+		ContentValues values = new ContentValues();
+		values.put("timeOfContinuousUse", useTime);
+		wdb.update("user", values, "username = ?", new String[] { username });
+	}
+	public void close(){
+		if(rdb!=null){
+			rdb.close();
+		}
+		if(wdb!=null){
+			wdb.close();
+		}
 	}
 }

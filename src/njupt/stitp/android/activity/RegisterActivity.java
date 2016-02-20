@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.service.GetAPPMsgService;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
@@ -125,6 +126,7 @@ public class RegisterActivity extends ActionBarActivity {
 					Toast.makeText(RegisterActivity.this,
 							getString(R.string.register_success),
 							Toast.LENGTH_LONG).show();
+					((MyApplication) getApplication()).setUsername(username);
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("username", username);
 					sPHelper.saveInfo(getApplicationContext(), "userInfo",

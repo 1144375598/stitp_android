@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -128,6 +129,7 @@ public class LoginActivity extends Activity {
 						params.put("user.password", password);
 						String result = new ServerHelper().getResult(path,
 								params);
+						Log.i("login result",result);
 						int result_code = JsonUtil.getResultCode(result);
 						Message message = new Message();
 						message.what = result_code;

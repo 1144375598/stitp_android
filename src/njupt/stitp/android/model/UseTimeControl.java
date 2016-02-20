@@ -3,9 +3,8 @@ package njupt.stitp.android.model;
 public class UseTimeControl {
 
 	private String username;
-	// ��start="12:10:00" end="23:30:00" ----24Сʱ��
-	private String start;
-	private String end;
+	private String start;//样式为12:00
+	private String end; //样式为24:00
 
 	public String getUsername() {
 		return username;

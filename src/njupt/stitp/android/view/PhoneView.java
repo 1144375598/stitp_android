@@ -1,7 +1,7 @@
 package njupt.stitp.android.view;
 
 import njupt.stitp.android.R;
-import njupt.stitp.android.service.MyService;
+import njupt.stitp.android.service.LockService;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -186,8 +186,8 @@ public class PhoneView extends LinearLayout {
 
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(mContext, MyService.class);
-				i.setAction(MyService.BACK_LOCK_ACTION);
+				Intent i = new Intent(mContext, LockService.class);
+				i.setAction(LockService.BACK_LOCK_ACTION);
 				mContext.startService(i);
 			}
 		});
