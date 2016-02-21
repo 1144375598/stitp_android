@@ -56,6 +56,13 @@ public class UseControlDB {
 		}
 	}
 
+	public void delete(UseTimeControl useTimeControl) {
+		wdb.rawQuery(
+				"delete from useTimeControl where username=? and start=? and end=?",
+				new String[] { useTimeControl.getUsername(),
+						useTimeControl.getStart(), useTimeControl.getEnd() });
+	}
+
 	public void close() {
 		if (rdb != null) {
 			rdb.close();

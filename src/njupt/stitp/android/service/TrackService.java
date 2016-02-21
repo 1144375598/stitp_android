@@ -42,7 +42,6 @@ public class TrackService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		//Log.i("info", "track Service OnCreate");
 		tracks = new ArrayList<Track>();
 		username = new SPHelper().getInfo(getApplicationContext(), "userInfo",
 				"username");
@@ -78,7 +77,7 @@ public class TrackService extends Service {
 	private void initLocation() {
 		LocationClientOption option = new LocationClientOption();
 		option.setCoorType("bd09ll");// 可选，默认gcj02，设置返回的定位结果坐标系
-		option.setScanSpan(1000*60);// 1min定位一次
+		option.setScanSpan(1000 * 60);// 1min定位一次
 		option.setIsNeedAddress(true);// 可选，设置是否需要地址信息，默认不需要
 		option.setOpenGps(true);// 可选，默认false,设置是否使用gps
 		mLocationClient.setLocOption(option);
@@ -88,12 +87,12 @@ public class TrackService extends Service {
 
 		@Override
 		public void onReceiveLocation(BDLocation location) {
-			//Log.i("address", location.getAddrStr());
 			// 离线定位或网络定位成功
 			if (location.getLocType() == BDLocation.TypeOffLineLocation
 					|| location.getLocType() == BDLocation.TypeNetWorkLocation) {
-				if (lastAddress==null||!location.getAddrStr().equals(lastAddress)) {
-					lastAddress=location.getAddrStr();
+				if (lastAddress == null
+						|| !location.getAddrStr().equals(lastAddress)) {
+					lastAddress = location.getAddrStr();
 					double latitude = location.getLatitude();
 					double longitude = location.getLongitude();
 					Track track = new Track();
@@ -106,14 +105,14 @@ public class TrackService extends Service {
 					track.setUsername(username);
 					track.setStayTime(1);
 					tracks.add(track);
-				}else{
-					Track temp=tracks.get(tracks.size()-1);
-					temp.setStayTime(temp.getStayTime()+1);
+				} else {
+					Track temp = tracks.get(tracks.size() - 1);
+					temp.setStayTime(temp.getStayTime() + 1);
 				}
 			}
-			if (tracks.size() >= 60||tracks.get(tracks.size()-1).getStayTime()>=60) {
-				//Log.i("2", "asadad");
-				lastAddress=null;
+			if (tracks.size() >= 60
+					|| tracks.get(tracks.size() - 1).getStayTime() >= 60) {
+				lastAddress = null;
 				unCommitTracks = trackDB.getUncommitTrack(username);
 				new Thread(new Runnable() {
 
@@ -124,7 +123,6 @@ public class TrackService extends Service {
 							flag = serverHelper.uploadTrackAndAPP(path,
 									unCommitTracks, null);
 							if (flag) {
-								//Log.i("3", "asadad");
 								Message msg = new Message();
 								msg.what = 0;
 								handler.sendMessage(msg);
@@ -133,12 +131,10 @@ public class TrackService extends Service {
 						flag = serverHelper.uploadTrackAndAPP(path, tracks,
 								null);
 						if (flag) {
-							//Log.i("4", "asadad");
 							Message msg = new Message();
 							msg.what = 1;
 							handler.sendMessage(msg);
 						} else {
-							//Log.i("5", "asadad");
 							Message msg = new Message();
 							msg.what = 2;
 							handler.sendMessage(msg);
@@ -154,10 +150,10 @@ public class TrackService extends Service {
 		if (mLocationClient.isStarted()) {
 			mLocationClient.stop();
 		}
-		if(tracks.size()>0){
+		if (tracks.size() > 0) {
 			trackDB.addTracks(tracks, 1);
 		}
-		if(trackDB!=null){
+		if (trackDB != null) {
 			trackDB.close();
 		}
 		super.onDestroy();

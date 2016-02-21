@@ -35,7 +35,7 @@ public class UseControlAdapter extends ArrayAdapter<UseTimeControl> {
 			view = convertView;
 			viewHolder = (ViewHolder) view.getTag(); // 重新获取ViewHolder
 		}
-		viewHolder.controlTime.setText(useTimeControl.getStart() + " - "
+		viewHolder.controlTime.setText(useTimeControl.getStart() + "-"
 				+ useTimeControl.getEnd());
 		return view;
 

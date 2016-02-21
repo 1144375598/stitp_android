@@ -47,7 +47,7 @@
                 <action android:name="screen_on" />
                 <action android:name="screen_off" />
                 <action android:name="android.media.VOLUME_CHANGED_ACTION" />
-                 <action android:name="music_volume_changed" />
+                <action android:name="music_volume_changed" />
             </intent-filter>
         </receiver>
 
@@ -70,16 +70,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".avtivity.LoginActivity" />
-        </activity>
-        <activity android:name=".activity.SettingActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.FunctionActivity" />
-        </activity>
-        <activity android:name=".activity.AddFriendActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.FunctionActivity" />
         </activity>
         <activity android:name=".activity.TrackActivity" >
             <meta-data
@@ -105,6 +95,16 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".avtivity.FunctionActivity" />
+        </activity>
+        <activity android:name=".activity.UseControlActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avtivity.FunctionActivity" />
+        </activity>
+        <activity android:name=".activity.AddUseControlActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avtivity.UseControlActivity" />
         </activity>
 
         <service android:name=".service.GetAPPMsgService" />

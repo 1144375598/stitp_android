@@ -9,23 +9,30 @@ import njupt.stitp.android.db.UseControlDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.util.MyActivityManager;
+import njupt.stitp.android.util.ServerHelper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 //给孩子设置使用时间控制信息
 public class UseControlActivity extends ActionBarActivity {
 	private Spinner selectChild;
 	private String username;
+	private String loginName;
 	private List<String> names;
 	private ListView controlTimelist;
 	private UseControlDB useControlDB;
@@ -44,10 +51,11 @@ public class UseControlActivity extends ActionBarActivity {
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		controlTimelist = (ListView) findViewById(R.id.controltimeList);
 		username = ((MyApplication) getApplication()).getUsername();
+		loginName = username;
 
 		initSpinner();
 		setListView(username);
-
+		registerForContextMenu(controlTimelist);
 		selectChild.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -61,6 +69,42 @@ public class UseControlActivity extends ActionBarActivity {
 			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
+
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		menu.add(0, 1, 0, "删除");
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case 1:
+			if (username.equals(loginName)) {
+				Toast.makeText(this, getString(R.string.cannot_modify_self),
+						Toast.LENGTH_SHORT).show();
+				break;
+			}
+			AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item
+					.getMenuInfo();
+			View view = controlTimelist.getChildAt(menuInfo.position);
+			TextView controlmsg = (TextView) view
+					.findViewById(R.id.tv_control_time);
+			String[] msg = controlmsg.getText().toString().split("-");
+			UseTimeControl useTimeControl = new UseTimeControl();
+			useTimeControl.setUsername(username);
+			useTimeControl.setStart(msg[0]);
+			useTimeControl.setEnd(msg[1]);
+			useControlDB.delete(useTimeControl);
+			setListView(username);
+			break;
+
+		default:
+			break;
+		}
+		return super.onContextItemSelected(item);
 	}
 
 	private void initSpinner() {
@@ -94,8 +138,14 @@ public class UseControlActivity extends ActionBarActivity {
 		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.menu_item_add_controlTime:
-			intent = new Intent(this, AddUseControlActivity.class);
-			startActivity(intent);
+			if (!username.equals(loginName)) {
+				intent = new Intent(this, AddUseControlActivity.class);
+				intent.putExtra("username", username);
+				startActivityForResult(intent, 1);
+			} else {
+				Toast.makeText(this, getString(R.string.cannot_modify_self),
+						Toast.LENGTH_SHORT).show();
+			}
 			break;
 
 		default:
@@ -105,8 +155,37 @@ public class UseControlActivity extends ActionBarActivity {
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (resultCode) {
+		case RESULT_OK:
+			setListView(username);
+			break;
+		case RESULT_CANCELED:
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
 	protected void onDestroy() {
-		useControlDB.close();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				String path = "uploadInfo/useTimeControlInfo";
+				ServerHelper serverHelper = new ServerHelper();
+				UserDB userDB = new UserDB(UseControlActivity.this);
+				List<String> childName = userDB.getChildNames(loginName);
+				for (String name : childName) {
+					List<UseTimeControl> list = useControlDB
+							.getUseTimeControl(name);
+					serverHelper.uploadContolTime(path, list);
+				}
+				userDB.close();
+				useControlDB.close();
+			}
+		}).start();
 		super.onDestroy();
 	}
 }

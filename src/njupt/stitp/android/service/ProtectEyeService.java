@@ -55,7 +55,7 @@ public class ProtectEyeService extends Service {
 	public static final String OPEN_BUMP_REMIND_ACTION = "open bump remind";
 	public static final String CLOSE_BUMP_REMIND_ACTION = "close bump remind";
 	public static final String USE_CONTROL = "use control";
-	public static final String USE_CONTROL_CHANGE="use control change";
+	public static final String USE_CONTROL_CHANGE = "use control change";
 
 	@Override
 	public void onCreate() {
@@ -154,7 +154,7 @@ public class ProtectEyeService extends Service {
 			}
 		} else if (TextUtils.equals(action, USE_CONTROL)) {
 			setControlTimer();
-		}else if(TextUtils.equals(action, USE_CONTROL)){
+		} else if (TextUtils.equals(action, USE_CONTROL_CHANGE)) {
 			new Thread(new Runnable() {
 
 				@Override
@@ -163,11 +163,11 @@ public class ProtectEyeService extends Service {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("user.username", username);
 					String result = new ServerHelper().getResult(path, params);
-					List<UseTimeControl> list=JsonUtil.getUseControl(result);
-					useControlDB.deleteAndAdd(username,list);
+					List<UseTimeControl> list = JsonUtil.getUseControl(result);
+					useControlDB.deleteAndAdd(username, list);
 					setControlTimer();
 				}
-			}).start();			
+			}).start();
 		}
 
 		return super.onStartCommand(intent, flags, startId);
