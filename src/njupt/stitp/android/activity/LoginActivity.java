@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.UserDB;
@@ -37,6 +38,8 @@ public class LoginActivity extends Activity {
 	private SPHelper sPHelper;
 	private String path;
 	private Handler handler;
+	
+	private UserDB userDB;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -147,6 +150,7 @@ public class LoginActivity extends Activity {
 		login = (Button) findViewById(R.id.login);
 		register = (Button) findViewById(R.id.register);
 		p = new ProgressDialog(LoginActivity.this);
+		userDB=new UserDB(this);
 		p.setTitle(getString(R.string.loginProgress_title));
 		p.setMessage(new StringBuffer(getString(R.string.loginProgress_message)));
 		handler = new Handler() {
@@ -165,9 +169,7 @@ public class LoginActivity extends Activity {
 					// 如果数据库中无数据，则获取孩子和自己信息
 					new Thread(new Runnable() {
 						@Override
-						public void run() {
-							UserDB userDB = new UserDB(getApplicationContext());
-
+						public void run() {							
 							path = "user/getUser";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
@@ -223,5 +225,10 @@ public class LoginActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		MyActivityManager.getInstance().finshAllActivities();
+	}
+	@Override
+	protected void onDestroy() {
+		userDB.close();
+		super.onDestroy();
 	}
 }

@@ -44,7 +44,8 @@ public class AppActivity extends ActionBarActivity {
 	private Date tempDate;
 	private String path;
 	private Handler handler;
-	AppDB appDB;
+	private AppDB appDB;
+	private UserDB userDB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,10 @@ public class AppActivity extends ActionBarActivity {
 		nextDay = (Button) findViewById(R.id.next_day);
 		lastDay = (Button) findViewById(R.id.last_day);
 		appMsgList = (ListView) findViewById(R.id.app_msg_list);
-		appDB = new AppDB(getApplicationContext());
+		
+		appDB = new AppDB(this);
+		userDB=new UserDB(this);
+		
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -157,7 +161,7 @@ public class AppActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		names = new UserDB(getApplicationContext()).getChildNames(username);
+		names = userDB.getChildNames(username);
 		names.add(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				AppActivity.this, android.R.layout.simple_spinner_item, names);
@@ -192,8 +196,7 @@ public class AppActivity extends ActionBarActivity {
 						msg.what = new Integer(resultCode);
 						handler.sendMessage(msg);
 					} else {
-						List<APP> apps2 = JsonUtil.getApps(result);
-						AppDB appDB = new AppDB(getApplicationContext());
+						List<APP> apps2 = JsonUtil.getApps(result);						
 						appDB.updateMessage(tempName, apps2);
 						Message msg = new Message();
 						msg.what = 0;
@@ -212,6 +215,7 @@ public class AppActivity extends ActionBarActivity {
 	@Override
 	protected void onDestroy() {
 		appDB.close();
+		userDB.close();
 		super.onDestroy();
 	}
 }

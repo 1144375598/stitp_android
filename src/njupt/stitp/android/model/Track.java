@@ -2,8 +2,6 @@ package njupt.stitp.android.model;
 
 import java.io.Serializable;
 
-import android.R.integer;
-
 public class Track implements Serializable {
 
 	private static final long serialVersionUID = -758459502806858414L;

@@ -3,11 +3,9 @@ package njupt.stitp.android.receiver;
 import java.util.Date;
 
 import njupt.stitp.android.R;
-import njupt.stitp.android.activity.OtherFunctionActivity;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.OptionDB;
 import njupt.stitp.android.service.ProtectEyeService;
-import android.R.integer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -44,7 +42,8 @@ public class MyReceiver extends BroadcastReceiver {
 		if (action.equals("android.media.VOLUME_CHANGED_ACTION")||action.equals("music_volume_changed")) {			
 			String username = ((MyApplication) (context.getApplicationContext()))
 					.getUsername();
-			if (new OptionDB(context).getVoiceControl(username) == 1) {
+			OptionDB optionDB=new OptionDB(context);
+			if (optionDB.getVoiceControl(username) == 1) {
 				AudioManager audioManager = (AudioManager) context
 						.getSystemService(Context.AUDIO_SERVICE);
 				int currVolume = audioManager
@@ -59,7 +58,7 @@ public class MyReceiver extends BroadcastReceiver {
 					audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (int)(max*0.6),
 							AudioManager.FLAG_SHOW_UI);
 				}
-
+				optionDB.close();
 			}
 
 		}

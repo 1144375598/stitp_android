@@ -16,7 +16,6 @@ import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.ServerHelper;
-import android.R.integer;
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;

@@ -192,6 +192,7 @@ public class GetAPPMsgService extends Service {
 		if (runningApps.size() > 0) {
 			appDB.saveMessage(username, runningApps);
 		}
+		appDB.close();
 		super.onDestroy();
 	}
 }

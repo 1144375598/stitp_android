@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="157dp"
+        android:background="@drawable/bg_theme"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/et_search_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:background="@color/white"
+            android:drawableLeft="@drawable/bg_addfriend_search"
+            android:drawablePadding="5dp"
+            android:hint="@string/input_friend_name"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/choose_relationship"
+                android:textSize="15sp" />
+
+            <RadioGroup
+                android:id="@+id/radiogroup_relationship"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/relationship_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/relationship_parent" />
+
+                <RadioButton
+                    android:id="@+id/relationship_child"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/relationship_child" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/addfriend_sure"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_button"
+            android:text="@string/add"
+            android:textColor="@color/white"
+            android:textSize="15sp" 
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+	 <ListView
+        android:id="@+id/friend_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </ListView>
+</LinearLayout>

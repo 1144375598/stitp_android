@@ -6,7 +6,6 @@ import njupt.stitp.android.R;
 import njupt.stitp.android.db.UseControlDB;
 import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.util.MyActivityManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;

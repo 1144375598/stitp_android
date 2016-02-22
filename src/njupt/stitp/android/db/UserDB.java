@@ -16,10 +16,10 @@ public class UserDB {
 
 	public UserDB(Context context) {
 		helper = new DBOpenHelper(context);
-		
-		  rdb = helper.getReadableDatabase(); wdb =
-		  helper.getWritableDatabase();
-		 
+
+		rdb = helper.getReadableDatabase();
+		wdb = helper.getWritableDatabase();
+
 	}
 
 	public void delete() {
@@ -97,16 +97,30 @@ public class UserDB {
 		values.put("lockPwd", lockPwd);
 		wdb.update("user", values, "username = ?", new String[] { username });
 	}
-	public void updateContinueUse(String username,int useTime){
+
+	public void updateContinueUse(String username, int useTime) {
 		ContentValues values = new ContentValues();
 		values.put("timeOfContinuousUse", useTime);
 		wdb.update("user", values, "username = ?", new String[] { username });
 	}
-	public void close(){
-		if(rdb!=null){
+
+	public boolean isFriend(String username, String queryName) {
+		Cursor cursor = rdb.rawQuery("select parentname from relationship "
+				+ "where (childname =? and parentname=?) "
+				+ "or (childname=? and parentname=?)", new String[] { username,
+				queryName, username, queryName });
+		if (cursor.getCount() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void close() {
+		if (rdb != null) {
 			rdb.close();
 		}
-		if(wdb!=null){
+		if (wdb != null) {
 			wdb.close();
 		}
 	}

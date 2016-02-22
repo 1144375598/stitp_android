@@ -137,6 +137,24 @@
     <string name="cannot_modify_self">无法修改自己的锁屏计划</string>
     <string name="controltime_not_overlap">提示：锁屏计划时间请勿重叠</string>
     
+    <!-- AddFriendActivity -->
+    <string name="input_friend_name">请输入对方账户</string>
+    <string name="add">添加</string>
+    <string name="cannot_add_self_be_friend">不能添加自己为好友</string>
+    <string name="have_be_friend">该用户已经是您的好友</string>
+    <string name="relationship_parent">家长</string>
+    <string name="relationship_child">孩子</string>
+    <string name="choose_relationship">添加对方为:</string>
+    <string name="request_have_send">请求已发送</string>
+    <string name="addfriend_user_not_exist">该用户不存在</string>
+    <string name="agree">同意</string>
+    <string name="refuse">拒绝</string>
+    <string name="add_friend_request">好友申请</string>
+    <string name="add_friend_success">添加好友成功</string>
+    <string name="add_friend_fail">添加好友失败</string>
+    <string name="friend_manage">好友管理</string>
+    <string name="cannot_delete_parent">不能删除家长</string>
+    
     <!-- dialog -->
     <string name="voice_unit">%</string>
     <string name="dialog_set_voice">设置提醒音量</string>

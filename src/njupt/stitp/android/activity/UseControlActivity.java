@@ -36,6 +36,7 @@ public class UseControlActivity extends ActionBarActivity {
 	private List<String> names;
 	private ListView controlTimelist;
 	private UseControlDB useControlDB;
+	private UserDB userDB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,9 @@ public class UseControlActivity extends ActionBarActivity {
 				new StringBuffer(getString(R.string.function_lock)));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		useControlDB = new UseControlDB(getApplicationContext());
+		useControlDB = new UseControlDB(this);
+		userDB = new UserDB(this);
+		
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		controlTimelist = (ListView) findViewById(R.id.controltimeList);
 		username = ((MyApplication) getApplication()).getUsername();
@@ -108,7 +111,7 @@ public class UseControlActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		names = new UserDB(getApplicationContext()).getChildNames(username);
+		names = userDB.getChildNames(username);
 		names.add(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				UseControlActivity.this, android.R.layout.simple_spinner_item,
@@ -175,7 +178,6 @@ public class UseControlActivity extends ActionBarActivity {
 			public void run() {
 				String path = "uploadInfo/useTimeControlInfo";
 				ServerHelper serverHelper = new ServerHelper();
-				UserDB userDB = new UserDB(UseControlActivity.this);
 				List<String> childName = userDB.getChildNames(loginName);
 				for (String name : childName) {
 					List<UseTimeControl> list = useControlDB

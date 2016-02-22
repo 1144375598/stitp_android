@@ -6,9 +6,7 @@ import java.util.Map;
 
 import njupt.stitp.android.R;
 import njupt.stitp.android.util.MyActivityManager;
-import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.ServerHelper;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;

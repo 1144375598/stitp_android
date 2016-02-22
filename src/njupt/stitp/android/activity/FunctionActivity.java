@@ -2,7 +2,6 @@ package njupt.stitp.android.activity;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
@@ -31,7 +30,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
@@ -45,6 +43,8 @@ public class FunctionActivity extends ActionBarActivity {
 	private Button chat;
 	private String username;
 	private List<String> names;
+	private UserDB userDB;
+	private OptionDB optionDB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,14 +98,19 @@ public class FunctionActivity extends ActionBarActivity {
 		selectChild.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+				
 			}
+
+			
 		});
 	}
 
@@ -118,7 +123,9 @@ public class FunctionActivity extends ActionBarActivity {
 		appInfo = (Button) findViewById(R.id.function_findapp);
 		useControl = (Button) findViewById(R.id.function_controltime);
 		chat = (Button) findViewById(R.id.function_chat);
-
+		userDB=new UserDB(this);
+		optionDB=new OptionDB(this);
+		
 		// 百度云推送服务
 		PushManager.startWork(getApplicationContext(),
 				PushConstants.LOGIN_TYPE_API_KEY, PushUtil.getApiKey());
@@ -141,11 +148,13 @@ public class FunctionActivity extends ActionBarActivity {
 	@Override
 	protected void onDestroy() {
 		useTime.stop();
+		userDB.close();
+		optionDB.close();
 		super.onDestroy();
 	}
 
 	private void initSpinner() {
-		names = new UserDB(getApplicationContext()).getChildNames(username);
+		names = userDB.getChildNames(username);
 		names.add(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				FunctionActivity.this, android.R.layout.simple_spinner_item,
@@ -161,7 +170,6 @@ public class FunctionActivity extends ActionBarActivity {
 		startService(intent1);
 		intent1 = new Intent(FunctionActivity.this, TrackService.class);
 		startService(intent1);
-		OptionDB optionDB = new OptionDB(this);
 		if (optionDB.getBumpRemind(username) == 1) {
 			intent1 = new Intent(this, ProtectEyeService.class);
 			intent1.setAction(ProtectEyeService.OPEN_BUMP_REMIND_ACTION);

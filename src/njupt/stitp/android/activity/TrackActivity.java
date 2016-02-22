@@ -71,6 +71,9 @@ public class TrackActivity extends ActionBarActivity {
 	private Handler handler;
 	private String tempName;
 	private Date tempDate;
+	
+	private UserDB userDB;
+	private TrackDB trackDB;
 
 	// 定位相关
 	private LocationClient mLocClient;
@@ -207,7 +210,7 @@ public class TrackActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		names = new UserDB(getApplicationContext()).getChildNames(username);
+		names = userDB.getChildNames(username);
 		names.add(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				TrackActivity.this, android.R.layout.simple_spinner_item, names);
@@ -292,7 +295,10 @@ public class TrackActivity extends ActionBarActivity {
 		nextDay = (Button) findViewById(R.id.next_day);
 		selectedDay = (TextView) findViewById(R.id.selected_day);
 		selectChild = (Spinner) findViewById(R.id.selectChild);
-
+		
+		userDB=new UserDB(this);
+		trackDB=new TrackDB(this);
+		
 		mMapView = (MapView) findViewById(R.id.bmapView);
 		mBaiduMap = mMapView.getMap();
 
@@ -303,9 +309,8 @@ public class TrackActivity extends ActionBarActivity {
 				switch (msg.what) {
 				case 0:
 					List<Track> tracks = (List<Track>) msg.obj;
-					new TrackDB(getApplicationContext()).dropThenAddTracks(
-							tracks, 2);
-					Log.i("track大小", ((Integer) tracks.size()).toString());
+					trackDB.dropThenAddTracks(
+							tracks, 2);				
 					setTrack(tracks);
 					break;
 				case 1:
@@ -339,8 +344,7 @@ public class TrackActivity extends ActionBarActivity {
 
 	private void getTracks(String name, Date date) {
 		tempDate = date;
-		tempName = name;
-		TrackDB trackDB = new TrackDB(getApplicationContext());
+		tempName = name;		
 		List<Track> tracks = trackDB.getTracks(name, date);
 		Boolean flag = true;
 		if (tracks.size() > 0) {
@@ -406,7 +410,6 @@ public class TrackActivity extends ActionBarActivity {
 			if (location == null || mMapView == null) {
 				return;
 			}
-			// Log.i("info", "一次");
 			MyLocationData locData = new MyLocationData.Builder()
 					.accuracy(location.getRadius())
 					.latitude(location.getLatitude())
@@ -424,6 +427,8 @@ public class TrackActivity extends ActionBarActivity {
 
 	@Override
 	protected void onDestroy() {
+		userDB.close();
+		trackDB.close();
 		// 退出时销毁定位
 		mLocClient.stop();
 		// 关闭定位图层

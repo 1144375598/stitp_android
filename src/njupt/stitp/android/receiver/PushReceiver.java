@@ -5,22 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
-import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.OptionDB;
-import njupt.stitp.android.db.UseControlDB;
+import njupt.stitp.android.db.RelationshipDB;
 import njupt.stitp.android.db.UserDB;
-import njupt.stitp.android.model.UseTimeControl;
+import njupt.stitp.android.service.AddFriendService;
 import njupt.stitp.android.service.LockService;
 import njupt.stitp.android.service.ProtectEyeService;
-import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.ServerHelper;
-import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.baidu.android.pushservice.PushMessageReceiver;
 
@@ -28,6 +23,20 @@ import com.baidu.android.pushservice.PushMessageReceiver;
 public class PushReceiver extends PushMessageReceiver {
 	private String cid;
 	private String username;
+	public static final int MODIFY_LOCK_PWD = 0;
+	public static final int LOCK_SCREEN = 1;
+	public static final int UNLOCK_SCREEN = 2;
+	public static final int OPEN_VOICE_CONTROL = 3;
+	public static final int CLOSE_VOICE_CONTROL = 4;
+	public static final int OPEN_BUMP_REMIND = 5;
+	public static final int CLOSE_BUMP_REMIND = 6;
+	public static final int OPEN_CONTINUE_USE = 7;
+	public static final int CLOSE_CONTINUE_USE = 8;
+	public static final int MODIFY_CONTINUE_USE = 9;
+	public static final int MODIFY_LOCK_PLAN = 10;
+	public static final int REQUEST_ADD_FRIEND = 11;
+	public static final int ADD_FRIEND_RESULT = 12;
+	public static final int PARENT_LIST_CHANGE=13;
 
 	/**
 	 * 调用 PushManager.startWorkPushManager.startWork PushManager.startWork后，sdk
@@ -47,7 +56,7 @@ public class PushReceiver extends PushMessageReceiver {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("user.username", username);
 				params.put("user.cid", cid);
-				String result = new ServerHelper().getResult(path, params);
+				new ServerHelper().getResult(path, params);
 			}
 		}).start();
 
@@ -82,6 +91,7 @@ public class PushReceiver extends PushMessageReceiver {
 			String customContentString) {
 		Log.i("透传消息", message);
 		OptionDB optionDB = new OptionDB(context);
+		UserDB userDB = new UserDB(context);
 		username = ((MyApplication) (context.getApplicationContext()))
 				.getUsername();
 		String serviceCode = null;
@@ -94,78 +104,105 @@ public class PushReceiver extends PushMessageReceiver {
 		serviceCode = customJson.getString("serviceCode");
 		int codeNum = Integer.valueOf(serviceCode);
 		switch (codeNum) {
-		case 0:
+		case MODIFY_LOCK_PWD:
 			String lockPwd0 = null;
 			lockPwd0 = customJson.getString("lockPwd");
 			if (!lockPwd0.equals("null")) {
-				new UserDB(context).updateLockPwd(username, lockPwd0);
+				userDB.updateLockPwd(username, lockPwd0);
 			}
 			break;
-		case 1:
+		case LOCK_SCREEN:
 			String lockPwd = null;
 			lockPwd = customJson.getString("lockPwd");
 			if (!lockPwd.equals("null")) {
-				new UserDB(context).updateLockPwd(username, lockPwd);
+				userDB.updateLockPwd(username, lockPwd);
 			}
 			i = new Intent(context, LockService.class);
 			i.setAction(LockService.ONE_KEY_LOCK_ACTION);
 			context.startService(i);
 			optionDB.setLockScreen(username, 1);
 			break;
-		case 2:
+		case UNLOCK_SCREEN:
 			i = new Intent(context, LockService.class);
 			i.setAction(LockService.UNLOCK_SUCCESS_ACTION);
 			context.startService(i);
 			optionDB.setLockScreen(username, 0);
 			break;
-		case 3:
-			new OptionDB(context).setVoiceControl(username, 1);
+		case OPEN_VOICE_CONTROL:
+			optionDB.setVoiceControl(username, 1);
 			i = new Intent("music_volume_changed");
 			context.sendBroadcast(i);
 			break;
-		case 4:
-			new OptionDB(context).setVoiceControl(username, 0);
+		case CLOSE_VOICE_CONTROL:
+			optionDB.setVoiceControl(username, 0);
 			break;
-		case 5:
+		case OPEN_BUMP_REMIND:
 			i = new Intent(context, ProtectEyeService.class);
 			i.setAction(ProtectEyeService.OPEN_BUMP_REMIND_ACTION);
 			context.startService(i);
 			optionDB.setBumpRemind(username, 1);
 			break;
-		case 6:
+		case CLOSE_BUMP_REMIND:
 			i = new Intent(context, ProtectEyeService.class);
 			i.setAction(ProtectEyeService.CLOSE_BUMP_REMIND_ACTION);
 			context.startService(i);
 			optionDB.setBumpRemind(username, 0);
 			break;
-		case 7:
+		case OPEN_CONTINUE_USE:
 			i = new Intent(context, ProtectEyeService.class);
 			i.setAction(ProtectEyeService.OPEN_CONTINUE_USE_ACTION);
 			context.startService(i);
 			optionDB.setContinueUse(username, 1);
 			break;
-		case 8:
+		case CLOSE_CONTINUE_USE:
 			i = new Intent(context, ProtectEyeService.class);
 			i.setAction(ProtectEyeService.CLOSE_CONTINUE_USE_ACTION);
 			context.startService(i);
 			optionDB.setContinueUse(username, 0);
 			break;
-		case 9:
+		case MODIFY_CONTINUE_USE:
 			int useTime = customJson.getInt("continueUseTime");
-			new UserDB(context).updateContinueUse(username, useTime);
+			userDB.updateContinueUse(username, useTime);
 			i = new Intent(context, ProtectEyeService.class);
 			i.setAction(ProtectEyeService.OPEN_CONTINUE_USE_ACTION);
 			context.startService(i);
 			break;
-		case 10:
+		case MODIFY_LOCK_PLAN:
 			i = new Intent(context, ProtectEyeService.class);
 			i.setAction(ProtectEyeService.USE_CONTROL_CHANGE);
 			context.startService(i);
+			break;
+		case REQUEST_ADD_FRIEND:
+			String requestName = customJson.getString("requestName");
+			String relationship = customJson.getString("relationship");
+			i = new Intent(context, AddFriendService.class);
+			i.setAction(AddFriendService.REQUEST_ADD_FRIEND_ACTION);
+			i.putExtra("requestName", requestName);
+			i.putExtra("relationship", relationship);
+			context.startService(i);
+			break;
+		case ADD_FRIEND_RESULT:
+			String friendName=customJson.getString("friendName");
+			String resultCode=customJson.getString("resultCode");
+			String relationship2 = customJson.getString("relationship");
+			i = new Intent(context, AddFriendService.class);
+			i.setAction(AddFriendService.ADD_FRIEND_RESULT_ACTION);
+			i.putExtra("friendName", friendName);
+			i.putExtra("relationship", relationship2);
+			i.putExtra("resultCode", resultCode);
+			context.startService(i);
+			break;
+		case PARENT_LIST_CHANGE:
+			String parentName=customJson.getString("parentName");
+			RelationshipDB relationshipDB=new RelationshipDB(context);
+			relationshipDB.deleteFriend(parentName, username);
+			relationshipDB.close();
 			break;
 		default:
 			break;
 		}
 		optionDB.close();
+		userDB.close();
 	}
 
 	@Override
