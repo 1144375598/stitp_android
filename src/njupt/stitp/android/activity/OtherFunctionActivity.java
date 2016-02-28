@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.OptionDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.util.MyActivityManager;
@@ -17,9 +18,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -86,8 +90,8 @@ public class OtherFunctionActivity extends ActionBarActivity {
 		lockPwdView = (TextView) findViewById(R.id.tv_lock_pwd);
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		continueUseView = (TextView) findViewById(R.id.tv_continue_use_time);
-		userDB = new UserDB(getApplicationContext());
-		optionDB = new OptionDB(getApplicationContext());
+		userDB = new UserDB(this);
+		optionDB = new OptionDB(this);
 		initSpinner();
 		setOption();
 
@@ -255,7 +259,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 									params.put("serviceCode", "3");
 									String result = new ServerHelper()
 											.getResult(path, params);
-									if (result.equals("200")) {
+									if (TextUtils.equals(result, "200")) {
 										Message message = new Message();
 										message.what = OPEN_VOICECONTROL_SUCCESS;
 										handler.sendMessage(message);
@@ -279,7 +283,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 									params.put("serviceCode", "4");
 									String result = new ServerHelper()
 											.getResult(path, params);
-									if (result.equals("200")) {
+									if (TextUtils.equals(result, "200")) {
 										Message message = new Message();
 										message.what = CLOSE_VOICECONTROL_SUCCESS;
 										handler.sendMessage(message);
@@ -315,7 +319,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 							params.put("serviceCode", "5");
 							String result = new ServerHelper().getResult(path,
 									params);
-							if (result.equals("200")) {
+							if (TextUtils.equals(result, "200")) {
 								Message message = new Message();
 								message.what = OPEN_BUMPREMIND_SUCCESS;
 								handler.sendMessage(message);
@@ -339,7 +343,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 							params.put("serviceCode", "6");
 							String result = new ServerHelper().getResult(path,
 									params);
-							if (result.equals("200")) {
+							if (TextUtils.equals(result, "200")) {
 								Message message = new Message();
 								message.what = CLOSE_BUMPREMIND_SUCCESS;
 								handler.sendMessage(message);
@@ -382,7 +386,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 							String result = new ServerHelper().getResult(path,
 									params);
-							if (result.equals("200")) {
+							if (TextUtils.equals(result, "200")) {
 								Message message = new Message();
 								message.what = OPEN_LOCK_SUCCESS;
 								handler.sendMessage(message);
@@ -405,7 +409,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 							params.put("user.username", username);
 							String result = new ServerHelper().getResult(path,
 									params);
-							if (result.equals("200")) {
+							if (TextUtils.equals(result, "200")) {
 								Message message = new Message();
 								message.what = CLOSE_LOCK_SUCCESS;
 								handler.sendMessage(message);
@@ -449,7 +453,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 							params.put("serviceCode", "7");
 							String result = new ServerHelper().getResult(path,
 									params);
-							if (result.equals("200")) {
+							if (TextUtils.equals(result, "200")) {
 								Message message = new Message();
 								message.what = OPEN_USETIME_SUCCESS;
 								handler.sendMessage(message);
@@ -473,7 +477,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 							params.put("serviceCode", "8");
 							String result = new ServerHelper().getResult(path,
 									params);
-							if (result.equals("200")) {
+							if (TextUtils.equals(result, "200")) {
 								Message message = new Message();
 								message.what = CLOSE_USETIME_SUCCESS;
 								handler.sendMessage(message);
@@ -552,8 +556,8 @@ public class OtherFunctionActivity extends ActionBarActivity {
 																		path,
 																		params);
 														Log.i("result", result);
-														if (result
-																.equals("200")) {
+														if (TextUtils.equals(
+																result, "200")) {
 															Message message = new Message();
 															message.what = SET_USETIME_SUCCESS;
 															handler.sendMessage(message);
@@ -657,7 +661,8 @@ public class OtherFunctionActivity extends ActionBarActivity {
 												String result = new ServerHelper()
 														.getResult(path, params);
 												Log.i("result", result);
-												if (result.equals("200")) {
+												if (TextUtils.equals(result,
+														"200")) {
 													Message message = new Message();
 													message.what = SET_LOCKPWD_SUCCESS;
 													handler.sendMessage(message);
@@ -687,9 +692,8 @@ public class OtherFunctionActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		username = new SPHelper().getInfo(getApplicationContext(), "userInfo",
-				"username");
-		loginName = username;
+		loginName = ((MyApplication) getApplication()).getUsername();
+		username = loginName;
 		names = userDB.getChildNames(username);
 		names.add(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
@@ -737,6 +741,18 @@ public class OtherFunctionActivity extends ActionBarActivity {
 			continueUseView.setText(R.string.not_set);
 		} else {
 			continueUseView.setText(time + "分钟");
+		}
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(OtherFunctionActivity.this) != null) {
+				NavUtils.navigateUpFromSameTask(OtherFunctionActivity.this);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
 	}
 

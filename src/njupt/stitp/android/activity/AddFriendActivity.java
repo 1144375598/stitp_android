@@ -10,7 +10,6 @@ import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.RelationshipDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.Friend;
-import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
@@ -21,21 +20,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class AddFriendActivity extends ActionBarActivity {
 	private Button confirm;
@@ -61,8 +62,8 @@ public class AddFriendActivity extends ActionBarActivity {
 				new StringBuffer(getString(R.string.friend_manage)));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		confirm = (Button) findViewById(R.id.et_search_input);
-		friendName = (EditText) findViewById(R.id.addfriend_sure);
+		confirm = (Button) findViewById(R.id.addfriend_sure);
+		friendName = (EditText) findViewById(R.id.et_search_input);
 		parent = (RadioButton) findViewById(R.id.relationship_parent);
 		child = (RadioButton) findViewById(R.id.relationship_child);
 		friendList = (ListView) findViewById(R.id.friend_list);
@@ -133,6 +134,7 @@ public class AddFriendActivity extends ActionBarActivity {
 							int result_code = JsonUtil.getResultCode(result);
 							Message msg = new Message();
 							msg.what = result_code;
+							handler.sendMessage(msg);
 						}
 					}).start();
 				}
@@ -226,7 +228,7 @@ public class AddFriendActivity extends ActionBarActivity {
 									params.put("relationship", relationship);
 									new ServerHelper().getResult(path, params);
 									RelationshipDB relationshipDB = new RelationshipDB(
-											AddFriendActivity.this);
+											getApplicationContext());
 									if (TextUtils
 											.equals(relationship, "parent")) {
 										relationshipDB.addRelationship(
@@ -263,8 +265,21 @@ public class AddFriendActivity extends ActionBarActivity {
 							}).start();
 						}
 					});
+			builder.show();
 		}
 
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(AddFriendActivity.this) != null) {
+				NavUtils.navigateUpFromSameTask(AddFriendActivity.this);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override

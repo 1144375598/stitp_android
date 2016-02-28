@@ -7,7 +7,9 @@ import njupt.stitp.android.db.UseControlDB;
 import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.util.MyActivityManager;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -68,7 +70,17 @@ public class AddUseControlActivity extends ActionBarActivity {
 			}
 		});
 	}
-	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(AddUseControlActivity.this) != null) {
+				NavUtils.navigateUpFromSameTask(AddUseControlActivity.this);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 	@Override
 	public void onBackPressed() {
 		setResult(RESULT_CANCELED);

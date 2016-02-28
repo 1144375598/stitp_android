@@ -16,9 +16,11 @@ import njupt.stitp.android.util.PushUtil;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
@@ -42,6 +45,7 @@ public class FunctionActivity extends ActionBarActivity {
 	private Button useControl;
 	private Button chat;
 	private String username;
+	private String name;
 	private List<String> names;
 	private UserDB userDB;
 	private OptionDB optionDB;
@@ -89,10 +93,15 @@ public class FunctionActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(FunctionActivity.this,
-						ChatActivity.class);
-				intent.putExtra("username", username);
-				startActivity(intent);
+				if (TextUtils.equals(name, username)) {
+					Toast.makeText(FunctionActivity.this,
+							getString(R.string.cannot_chat_to_self),
+							Toast.LENGTH_SHORT).show();;
+					return;
+				}
+				String QQ = userDB.getUser(name).getQQ();
+				String url = "mqqwpa://im/chat?chat_type=wpa&uin=" + QQ;
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 			}
 		});
 		selectChild.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -100,22 +109,20 @@ public class FunctionActivity extends ActionBarActivity {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-				// TODO Auto-generated method stub
-				
+				name = names.get(position);
+
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
-			
 		});
 	}
 
 	private void init() {
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		username = getIntent().getExtras().getString("username");
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		useTime = (Chronometer) findViewById(R.id.usetimeChronometer);
@@ -123,9 +130,9 @@ public class FunctionActivity extends ActionBarActivity {
 		appInfo = (Button) findViewById(R.id.function_findapp);
 		useControl = (Button) findViewById(R.id.function_controltime);
 		chat = (Button) findViewById(R.id.function_chat);
-		userDB=new UserDB(this);
-		optionDB=new OptionDB(this);
-		
+		userDB = new UserDB(this);
+		optionDB = new OptionDB(this);
+
 		// 百度云推送服务
 		PushManager.startWork(getApplicationContext(),
 				PushConstants.LOGIN_TYPE_API_KEY, PushUtil.getApiKey());

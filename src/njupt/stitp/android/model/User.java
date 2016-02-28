@@ -6,12 +6,19 @@ public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String username;
-	private String lockPwd;//锁屏密码
-	private int timeOfContinuousUse=0;  //分钟为单位
-	private int timeOfContinuousListen=0;
+	private String lockPwd;// 锁屏密码
+	private int timeOfContinuousUse = 0; // 分钟为单位
+	private int timeOfContinuousListen = 0;
 	private String channelId;
-	
-	
+	private String QQ;
+
+	public String getQQ() {
+		return QQ;
+	}
+
+	public void setQQ(String qQ) {
+		QQ = qQ;
+	}
 
 	public String getLockPwd() {
 		return lockPwd;

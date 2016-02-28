@@ -12,6 +12,7 @@ import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -50,7 +51,7 @@ public class UseControlActivity extends ActionBarActivity {
 
 		useControlDB = new UseControlDB(this);
 		userDB = new UserDB(this);
-		
+
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		controlTimelist = (ListView) findViewById(R.id.controltimeList);
 		username = ((MyApplication) getApplication()).getUsername();
@@ -150,7 +151,11 @@ public class UseControlActivity extends ActionBarActivity {
 						Toast.LENGTH_SHORT).show();
 			}
 			break;
-
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(UseControlActivity.this) != null) {
+				NavUtils.navigateUpFromSameTask(UseControlActivity.this);
+			}
+			return true;
 		default:
 			break;
 		}

@@ -8,6 +8,7 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import njupt.stitp.android.model.APP;
+import njupt.stitp.android.model.GeoFencing;
 import njupt.stitp.android.model.Track;
 import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.model.User;
@@ -39,6 +40,7 @@ public class JsonUtil {
 			user.setUsername(child.getString("username"));
 			user.setTimeOfContinuousListen(child.getInt("timeOfContinuousUse"));
 			user.setTimeOfContinuousUse(child.getInt("timeOfContinuousUse"));
+			user.setQQ(child.getString("QQ"));
 			list.add(user);
 		}
 		return list;
@@ -57,6 +59,7 @@ public class JsonUtil {
 		user.setUsername(result.getString("username"));
 		user.setTimeOfContinuousListen(result.getInt("timeOfContinuousUse"));
 		user.setTimeOfContinuousUse(result.getInt("timeOfContinuousUse"));
+		user.setQQ(result.getString("QQ"));
 		return user;
 	}
 
@@ -139,5 +142,23 @@ public class JsonUtil {
 			list.add(useTimeControl);
 		}
 		return list;
+	}
+
+	public static GeoFencing getGeo(String json) {
+		if (json == null || json.isEmpty())
+			return null;
+		JSONObject jsonObject = new JSONObject().fromString(json);
+		int result_code = jsonObject.getInt("result_code");
+		if (result_code == 1)
+			return null;
+		JSONArray result = jsonObject.getJSONArray("result");
+		JSONObject jsonGeo = result.getJSONObject(0);
+		GeoFencing geoFencing = new GeoFencing();
+		geoFencing.setAddress(jsonGeo.getString("address"));
+		geoFencing.setDistance(jsonGeo.getDouble("distance"));
+		geoFencing.setLatitude(jsonGeo.getDouble("latitude"));
+		geoFencing.setLongitude(jsonGeo.getDouble("longitude"));
+		geoFencing.setUsername(jsonGeo.getString("username"));
+		return geoFencing;
 	}
 }

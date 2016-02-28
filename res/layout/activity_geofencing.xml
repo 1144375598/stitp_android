@@ -2,33 +2,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_theme"
+    android:background="@drawable/bg_register"
     android:orientation="vertical" >
 
     <com.baidu.mapapi.map.MapView
-        android:id="@+id/bmapView"
+        android:id="@+id/geo_bmapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clickable="true" />
-
-    <EditText
-        android:id="@+id/geo_name"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="@string/input_geo_name"
-        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:hint="@string/geo_center"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/geo_center_city"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:hint="@string/city"
+            android:textSize="20sp" />
+          <EditText
+            android:id="@+id/geo_center_address"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="4"
+            android:singleLine="true"
+            android:hint="@string/address"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:hint="@string/geo_range"
+            android:textSize="20sp" />
+
         <EditText
             android:id="@+id/geo_range"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
+            android:singleLine="true"
             android:hint="@string/input_geo_range"
             android:textSize="20sp" />
 
@@ -41,7 +70,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/register"
+        android:id="@+id/save"
         android:layout_width="200dp"
         android:layout_height="45dp"
         android:layout_gravity="center_horizontal"

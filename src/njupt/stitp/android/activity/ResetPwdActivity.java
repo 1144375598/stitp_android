@@ -1,6 +1,5 @@
 package njupt.stitp.android.activity;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ResetPwdActivity extends ActionBarActivity{
+public class ResetPwdActivity extends ActionBarActivity {
 	private TextView resetPwdQuestion;
 	private EditText resetPwdAnswer;
 	private EditText resetPassword;
@@ -34,6 +33,7 @@ public class ResetPwdActivity extends ActionBarActivity{
 	private String username;
 	private ProgressDialog dialog;
 	private Handler handler;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,22 +41,22 @@ public class ResetPwdActivity extends ActionBarActivity{
 		setContentView(R.layout.activity_resetpwd);
 		init();
 		confirm.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				inputAnswer=resetPwdAnswer.getText().toString().trim();
+				inputAnswer = resetPwdAnswer.getText().toString().trim();
 				password = resetPassword.getText().toString().trim();
-				if(inputAnswer==null||inputAnswer.isEmpty()){
+				if (inputAnswer == null || inputAnswer.isEmpty()) {
 					resetPwdAnswer.requestFocus();
 					resetPwdAnswer.setError(new StringBuffer(
 							getString(R.string.answer_is_null)));
 					return;
-				}else if(password==null||password.isEmpty()){
+				} else if (password == null || password.isEmpty()) {
 					resetPassword.requestFocus();
 					resetPassword.setError(new StringBuffer(
 							getString(R.string.password_is_null)));
 					return;
-				} else if(answer!=inputAnswer){
+				} else if (answer != inputAnswer) {
 					resetPwdAnswer.requestFocus();
 					resetPwdAnswer.setError(new StringBuffer(
 							getString(R.string.answer_is_wrong)));
@@ -71,7 +71,7 @@ public class ResetPwdActivity extends ActionBarActivity{
 						params.put("user.password", password);
 						String result = new ServerHelper().getResult(path,
 								params);
-						if(result.equals("200")){
+						if (result.equals("200")) {
 							Message message = new Message();
 							message.what = 200;
 							handler.sendMessage(message);
@@ -81,20 +81,22 @@ public class ResetPwdActivity extends ActionBarActivity{
 			}
 		});
 	}
-	private void init(){
+
+	private void init() {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setTitle(new StringBuffer(getString(R.string.reset_pwd)));
-		resetPwdAnswer=(EditText) findViewById(R.id.resetpwd_answer);
-		resetPwdQuestion=(TextView) findViewById(R.id.resetpwd_question);
-		confirm=(Button) findViewById(R.id.confirm);
-		resetPassword=(EditText) findViewById(R.id.new_pwd);
+		getSupportActionBar().setTitle(
+				new StringBuffer(getString(R.string.reset_pwd)));
+		resetPwdAnswer = (EditText) findViewById(R.id.resetpwd_answer);
+		resetPwdQuestion = (TextView) findViewById(R.id.resetpwd_question);
+		confirm = (Button) findViewById(R.id.confirm);
+		resetPassword = (EditText) findViewById(R.id.new_pwd);
 		dialog = new ProgressDialog(ResetPwdActivity.this);
 		dialog.setTitle(getString(R.string.register_upload_message));
 		dialog.setMessage(new StringBuffer(getString(R.string.register_wait)));
-		username= getIntent().getExtras().getString("username");
+		username = getIntent().getExtras().getString("username");
 		resetPwdQuestion.setText(getIntent().getExtras().getString("question"));
-		answer=getIntent().getExtras().getString("answer");
-		handler=new Handler(){
+		answer = getIntent().getExtras().getString("answer");
+		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
@@ -103,7 +105,8 @@ public class ResetPwdActivity extends ActionBarActivity{
 					Toast.makeText(ResetPwdActivity.this,
 							getString(R.string.password_reset_success),
 							Toast.LENGTH_SHORT).show();
-					Intent intent=new Intent(ResetPwdActivity.this,LoginActivity.class);
+					Intent intent = new Intent(ResetPwdActivity.this,
+							LoginActivity.class);
 					startActivity(intent);
 					break;
 
@@ -117,15 +120,16 @@ public class ResetPwdActivity extends ActionBarActivity{
 			}
 		};
 	}
-	public boolean onOptionsItemSelected(MenuItem item) {  
-	    switch (item.getItemId()) {  
-	    case android.R.id.home:  
-	        if(NavUtils.getParentActivityName(ResetPwdActivity.this)!=null){
-	        	NavUtils.navigateUpFromSameTask(ResetPwdActivity.this);
-	        }
-	        return true;
-	        default:
-	        	return super.onOptionsItemSelected(item);
-	    } 	    
-	}  
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(ResetPwdActivity.this) != null) {
+				NavUtils.navigateUpFromSameTask(ResetPwdActivity.this);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 }

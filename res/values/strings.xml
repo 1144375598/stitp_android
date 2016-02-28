@@ -31,6 +31,8 @@
     <string name="register_fail">注册失败，用户名已存在</string>
     <string name="confirm_password">确认密码</string>
     <string name="password_is_different">密码不一致</string>
+    <string name="QQ_number">请绑定QQ账号</string>
+    <string name="QQ_cannot_null">QQ号不能为空</string>
 
     <!-- ResetPwdActivity -->
     <string name="input_new_pwd">请输入新密码</string>
@@ -48,11 +50,16 @@
     <string name="get_track_fail">获取足迹信息错误</string>
     <string name="none_track">无足迹信息</string>
     <string name="now_location">当前位置</string>
-    <string name="add_geo">添加位置提醒</string>
-    <string name="geo_list">位置提醒列表</string>
-    <string name="input_geo_name">请输入位置提醒名称</string>
-    <string name="input_geo_range">请输入提醒范围</string>
+	
+    <!-- GeoActivity -->
+    <string name="geofencing">地理围栏</string>   
+    <string name="input_geo_center">请输入地理围栏中心</string>
+    <string name="input_geo_range">请输入围栏范围</string>
     <string name="geo_range_unit">米</string>
+    <string name="geo_center">中心:</string>
+    <string name="geo_range">范围</string>
+    <string name="city">城市</string>
+    <string name="address">地址</string>
     <string name="save">保存</string>
 
     <!-- AppInfoActivity -->
@@ -73,13 +80,14 @@
     <string name="cancel">取消</string>
     <string name="add_friend">添加好友</string>
     <string name="other_function">其他功能</string>
+    <string name="cannot_chat_to_self">不能和自己聊天</string>
 
     <!-- otherFunctionActivity -->
     <string name="voice_control">音量控制</string>
     <string name="lock_screen">一键锁屏</string>
     <string name="set_lock_pwd">设置锁屏密码</string>
     <string name="bump_remind">颠簸提醒</string>
-    <string name="continue_use_time">连续使用时长</string>
+    <string name="continue_use_time">连续使用控制</string>
     <string name="logout">退出账户</string>
     <string name="text_on">ON</string>
     <string name="text_off">OFF</string>

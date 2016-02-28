@@ -3,24 +3,41 @@ package njupt.stitp.android.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import njupt.stitp.android.R;
+import njupt.stitp.android.db.GeoDB;
 import njupt.stitp.android.db.TrackDB;
+import njupt.stitp.android.model.GeoFencing;
 import njupt.stitp.android.model.Track;
+import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.app.Notification.Builder;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 
 public class TrackService extends Service {
+	public static final String UPLOAD_GEO_ACTION = "upload geo";
+	public static final String DOWNLOAD_GEO_ACTION = "download geo";
+	public static final String OUT_OF_RANGE_ACTION = "out of range";
+
 	private LocationClient mLocationClient = null;
 	private BDLocationListener myListener = new MyLocationListener();
 	private List<Track> tracks;
@@ -29,8 +46,13 @@ public class TrackService extends Service {
 	private ServerHelper serverHelper;
 	private String path;
 	private TrackDB trackDB;
+	private GeoDB geoDB;
 	private Handler handler;
 	private String lastAddress;
+	private boolean outOfRange;
+	private LatLng geoCenter;
+	private double distance;
+	private NotificationManager nm;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -41,11 +63,14 @@ public class TrackService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		tracks = new ArrayList<Track>();
+		outOfRange = false;
 		username = new SPHelper().getInfo(getApplicationContext(), "userInfo",
 				"username");
 		serverHelper = new ServerHelper();
 		path = "uploadInfo/trackInfo";
-		trackDB = new TrackDB(getApplicationContext());
+		trackDB = new TrackDB(this);
+		geoDB = new GeoDB(this);
+		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -66,10 +91,44 @@ public class TrackService extends Service {
 			}
 		};
 		lastAddress = null;
+
+		GeoFencing geoFencing = geoDB.getGeo(username);
+		if(geoFencing!=null){
+			geoCenter = new LatLng(geoFencing.getLatitude(),
+					geoFencing.getLongitude());
+			distance = geoFencing.getDistance();
+		}	
 		mLocationClient = new LocationClient(getApplicationContext()); // 声明LocationClient类
 		mLocationClient.registerLocationListener(myListener); // 注册监听函数
 		initLocation();
 		mLocationClient.start();
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		String action=null;
+		if(intent!=null){
+			action = intent.getAction();
+		}		
+		if (TextUtils.equals(action, UPLOAD_GEO_ACTION)) {
+			String username = intent.getExtras().getString("username");
+			uploadGeo(username);
+		} else if (TextUtils.equals(action, DOWNLOAD_GEO_ACTION)) {
+			String username = intent.getExtras().getString("username");
+			downloadGeo(username);
+		} else if (TextUtils.equals(action, OUT_OF_RANGE_ACTION)) {
+			String username = intent.getExtras().getString("username");
+			Builder builder = new Builder(this);
+			builder.setSmallIcon(R.drawable.ic_launcher);
+			builder.setContentTitle("提示");
+			builder.setContentText(username + "已超出地理围栏");
+			builder.setTicker("超出地理围栏");
+			Notification notification = builder.getNotification();
+			notification.flags = Notification.FLAG_ONLY_ALERT_ONCE
+					| Notification.FLAG_AUTO_CANCEL;
+			nm.notify(0, notification);
+		}
+		return super.onStartCommand(intent, flags, startId);
 	}
 
 	private void initLocation() {
@@ -88,6 +147,16 @@ public class TrackService extends Service {
 			// 离线定位或网络定位成功
 			if (location.getLocType() == BDLocation.TypeOffLineLocation
 					|| location.getLocType() == BDLocation.TypeNetWorkLocation) {
+				if (outOfRange == false&&geoCenter!=null) {
+					double distance2 = DistanceUtil.getDistance(
+							geoCenter,
+							new LatLng(location.getLatitude(), location
+									.getLongitude()));
+					if (distance2 > distance) {
+						outOfRange = true;
+						outOfRange();
+					}
+				}
 				if (lastAddress == null
 						|| !location.getAddrStr().equals(lastAddress)) {
 					lastAddress = location.getAddrStr();
@@ -109,7 +178,7 @@ public class TrackService extends Service {
 				}
 			}
 			if (tracks.size() >= 60
-					|| tracks.get(tracks.size() - 1).getStayTime() >= 60) {
+					||(tracks.size()>0&&tracks.get(tracks.size() - 1).getStayTime() >= 60) ) {
 				lastAddress = null;
 				unCommitTracks = trackDB.getUncommitTrack(username);
 				new Thread(new Runnable() {
@@ -143,6 +212,63 @@ public class TrackService extends Service {
 		}
 	}
 
+	private void downloadGeo(String name) {
+		final String name2 = name;
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				String path = "downloadInfo/geoFencingInfo";
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("user.username", name2);
+				String result = new ServerHelper().getResult(path, params);
+				GeoFencing geoFencing = JsonUtil.getGeo(result);
+				if (geoFencing != null) {
+					geoDB.saveGeo(name2, geoFencing);
+					geoCenter = new LatLng(geoFencing.getLatitude(),
+							geoFencing.getLongitude());
+					distance = geoFencing.getDistance();
+				}
+			}
+		}).start();
+	}
+
+	private void uploadGeo(String name) {
+		final String name2 = name;
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				String path = "uploadInfo/geoFencingInfo";
+				GeoFencing geoFencing = geoDB.getGeo(name2);
+				if (geoFencing == null) {
+					return;
+				}
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("geoFencing.user.username", name2);
+				params.put("geoFencing.longitude", geoFencing.getLongitude()
+						+ "");
+				params.put("geoFencing.latitude", geoFencing.getLatitude() + "");
+				params.put("geoFencing.distance", geoFencing.getDistance() + "");
+				params.put("geoFencing.address", geoFencing.getAddress());
+				new ServerHelper().getResult(path, params);
+			}
+		}).start();
+	}
+
+	private void outOfRange() {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				String path = "user/outOfRange";
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("user.username", username);
+				new ServerHelper().getResult(path, params);
+			}
+		}).start();
+	}
+
 	@Override
 	public void onDestroy() {
 		if (mLocationClient.isStarted()) {
@@ -153,6 +279,9 @@ public class TrackService extends Service {
 		}
 		if (trackDB != null) {
 			trackDB.close();
+		}
+		if (geoDB != null) {
+			geoDB.close();
 		}
 		super.onDestroy();
 	}

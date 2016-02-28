@@ -7,8 +7,7 @@ public class GeoFencing {
 	private double latitude;
 	private double distance;
 	private String address;
-	private String geoName;
-	
+
 	public String getAddress() {
 		return address;
 	}
@@ -25,14 +24,6 @@ public class GeoFencing {
 		this.longitude = longitude;
 	}
 
-	public String getGeoName() {
-		return geoName;
-	}
-
-	public void setGeoName(String geoName) {
-		this.geoName = geoName;
-	}
-
 	public String getUsername() {
 		return username;
 	}
@@ -40,8 +31,6 @@ public class GeoFencing {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-
 
 	public double getLatitude() {
 		return latitude;

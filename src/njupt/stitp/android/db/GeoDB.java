@@ -15,29 +15,28 @@ public class GeoDB {
 
 	public GeoDB(Context context) {
 		helper = new DBOpenHelper(context);
-		
-		 rdb = helper.getReadableDatabase(); wdb =
-		  helper.getWritableDatabase();
-		 
+		rdb = helper.getReadableDatabase();
+		wdb = helper.getWritableDatabase();
+
 	}
 
 	public void saveGeo(String username, GeoFencing geoFencing) {
-		String insert = "insert or ignore into GeoFencing(username,longitude,latitude,distance,address,geoName) values(?,?,?,?,?,?)";
+		String insert = "insert into GeoFencing(username,longitude,latitude,distance,address) values(?,?,?,?,?,?)";
+		wdb.execSQL("delete from GeoFencing where username=?",
+				new Object[] { username });
 		wdb.execSQL(
 				insert,
 				new Object[] { username, geoFencing.getLongitude(),
 						geoFencing.getLatitude(), geoFencing.getDistance(),
-						geoFencing.getAddress(), geoFencing.getGeoName() });
+						geoFencing.getAddress() });
 	}
 
-	public List<GeoFencing> getGeos(String username) {
-		List<GeoFencing> geoFencings = new ArrayList<GeoFencing>();
+	public GeoFencing getGeo(String username) {
 		Cursor cursor = rdb.rawQuery(
 				"select * from GeoFencing where username=?",
 				new String[] { username });
 		if (cursor.moveToFirst()) {
-			do {
-				GeoFencing geoFencing=new GeoFencing();
+				GeoFencing geoFencing = new GeoFencing();
 				geoFencing.setUsername(cursor.getString(cursor
 						.getColumnIndex("username")));
 				geoFencing.setLatitude(cursor.getDouble(cursor
@@ -46,21 +45,20 @@ public class GeoDB {
 						.getColumnIndex("longitude")));
 				geoFencing.setAddress(cursor.getString(cursor
 						.getColumnIndex("address")));
-				geoFencing.setGeoName(cursor.getString(cursor
-						.getColumnIndex("geoName")));
 				geoFencing.setDistance(cursor.getDouble(cursor
 						.getColumnIndex("distance")));
-				geoFencings.add(geoFencing);
-			} while (cursor.moveToNext());
+				cursor.close();
+				return geoFencing;
 		}
 		cursor.close();
-		return geoFencings;
+		return null;
 	}
-	public void close(){
-		if(rdb!=null){
+
+	public void close() {
+		if (rdb != null) {
 			rdb.close();
 		}
-		if(wdb!=null){
+		if (wdb != null) {
 			wdb.close();
 		}
 	}

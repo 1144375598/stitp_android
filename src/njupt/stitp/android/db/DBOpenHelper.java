@@ -24,9 +24,9 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 			+ "primary key(username,start,end))";
 
 	private static final String CREATE_GEOFENCING = "create table GeoFencing" + /* "create table IF NOT EXISTS GeoFencing" */
-	"( " + "username text," + "longitude rear," + "latitude rear,"
-			+ "distance rear, " + "address text," + "geoName text,"
-			+ "primary key(username,longitude,latitude,distance))";
+	"( " + "username text primary key," + "longitude rear," + "latitude rear,"
+			+ "distance rear, " + "address text" 
+			+ ")";
 
 	private static final String CREATE_RELATIONSHIP = "create table  relationship( "
 			+ "childname text,"

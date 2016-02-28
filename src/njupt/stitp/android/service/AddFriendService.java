@@ -42,10 +42,14 @@ public class AddFriendService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String action = intent.getAction();
+		String action = null;
 		String message = null;
+		if (intent != null) {
+			action = intent.getAction();
+		}
+
 		if (TextUtils.equals(action, REQUEST_ADD_FRIEND_ACTION)) {
-			String requsetName = intent.getExtras().getString("requsetName");
+			String requsetName = intent.getExtras().getString("requestName");
 			String relationship = intent.getExtras().getString("relationship");
 			if (relationship.equals("parent")) {
 				message = requsetName + "请求添加您为家长";
@@ -59,7 +63,7 @@ public class AddFriendService extends Service {
 			intent2.putExtra("relationship", relationship);
 			intent2.putExtra("message", message);
 			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-					intent, PendingIntent.FLAG_UPDATE_CURRENT);
+					intent2, PendingIntent.FLAG_UPDATE_CURRENT);
 
 			Builder builder = new Builder(this);
 			builder.setContentIntent(pendingIntent);

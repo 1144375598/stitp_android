@@ -14,17 +14,19 @@ import njupt.stitp.android.R;
 import njupt.stitp.android.db.TrackDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.Track;
-import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ReceiverView;
 import njupt.stitp.android.util.ServerHelper;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -71,7 +73,8 @@ public class TrackActivity extends ActionBarActivity {
 	private Handler handler;
 	private String tempName;
 	private Date tempDate;
-	
+	private String name;
+
 	private UserDB userDB;
 	private TrackDB trackDB;
 
@@ -95,7 +98,7 @@ public class TrackActivity extends ActionBarActivity {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				String name = names.get(arg2);
+				name = names.get(arg2);
 				Date date = null;
 				try {
 					date = new SimpleDateFormat("yyyy-MM-dd").parse(selectedDay
@@ -295,10 +298,10 @@ public class TrackActivity extends ActionBarActivity {
 		nextDay = (Button) findViewById(R.id.next_day);
 		selectedDay = (TextView) findViewById(R.id.selected_day);
 		selectChild = (Spinner) findViewById(R.id.selectChild);
-		
-		userDB=new UserDB(this);
-		trackDB=new TrackDB(this);
-		
+
+		userDB = new UserDB(this);
+		trackDB = new TrackDB(this);
+
 		mMapView = (MapView) findViewById(R.id.bmapView);
 		mBaiduMap = mMapView.getMap();
 
@@ -309,8 +312,7 @@ public class TrackActivity extends ActionBarActivity {
 				switch (msg.what) {
 				case 0:
 					List<Track> tracks = (List<Track>) msg.obj;
-					trackDB.dropThenAddTracks(
-							tracks, 2);				
+					trackDB.dropThenAddTracks(tracks, 2);
 					setTrack(tracks);
 					break;
 				case 1:
@@ -330,12 +332,24 @@ public class TrackActivity extends ActionBarActivity {
 		};
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.geofencing_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			if (NavUtils.getParentActivityName(TrackActivity.this) != null) {
 				NavUtils.navigateUpFromSameTask(TrackActivity.this);
 			}
+			return true;
+		case R.id.item_geo:
+			Intent intent = new Intent(this, GeoActivity.class);
+			intent.putExtra("username", name);
+			startService(intent);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -344,7 +358,7 @@ public class TrackActivity extends ActionBarActivity {
 
 	private void getTracks(String name, Date date) {
 		tempDate = date;
-		tempName = name;		
+		tempName = name;
 		List<Track> tracks = trackDB.getTracks(name, date);
 		Boolean flag = true;
 		if (tracks.size() > 0) {
@@ -383,7 +397,7 @@ public class TrackActivity extends ActionBarActivity {
 						msg.what = new Integer(resultCode);
 						handler.sendMessage(msg);
 					} else {
-						List<Track> tracks2 = JsonUtil.getTracks(result);						
+						List<Track> tracks2 = JsonUtil.getTracks(result);
 						Message msg = new Message();
 						msg.what = 0;
 						msg.obj = tracks2;
@@ -452,4 +466,5 @@ public class TrackActivity extends ActionBarActivity {
 		mMapView.onPause();
 		super.onPause();
 	}
+
 }

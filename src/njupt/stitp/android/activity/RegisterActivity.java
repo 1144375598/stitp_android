@@ -30,12 +30,14 @@ public class RegisterActivity extends ActionBarActivity {
 	private EditText confirmPassword;
 	private EditText validationQuestion;
 	private EditText validationAnswer;
+	private EditText qqNumber;
 	private ProgressDialog dialog;
 	private String question;
 	private String answer;
 	private String username;
 	private String password;
 	private String password2;
+	private String qq;
 	private String path;
 	private Handler handler;
 	private Button registerButton;
@@ -55,32 +57,34 @@ public class RegisterActivity extends ActionBarActivity {
 				password2 = confirmPassword.getText().toString().trim();
 				question = validationQuestion.getText().toString().trim();
 				answer = validationAnswer.getText().toString().trim();
+				qq = qqNumber.getText().toString().trim();
 				if (username == null || username.isEmpty()) {
 					etusername.requestFocus();
-					etusername.setError(new StringBuffer(
-							getString(R.string.username_is_null)));
+					etusername.setError(getString(R.string.username_is_null));
 					return;
 				} else if (password == null || password.isEmpty()) {
 					etpassword.requestFocus();
-					etpassword.setError(new StringBuffer(
-							getString(R.string.password_is_null)));
+					etpassword.setError(getString(R.string.password_is_null));
 					return;
 				} else if (!password.equals(password2)) {
 					confirmPassword.setText("");
 					etpassword.requestFocus();
-					etpassword.setError(new StringBuffer(
-							getString(R.string.password_is_different)));
+					etpassword
+							.setError(getString(R.string.password_is_different));
 					return;
 				} else if (question == null || question.isEmpty()) {
 					validationQuestion.requestFocus();
-					validationQuestion.setError(new StringBuffer(
-							getString(R.string.question_is_null)));
+					validationQuestion
+							.setError(getString(R.string.question_is_null));
 					return;
 				} else if (answer == null || answer.isEmpty()) {
 					validationAnswer.requestFocus();
-					validationAnswer.setError(new StringBuffer(
-							getString(R.string.answer_is_null)));
+					validationAnswer
+							.setError(getString(R.string.answer_is_null));
 					return;
+				} else if (qq == null || qq.isEmpty()) {
+					qqNumber.requestFocus();
+					qqNumber.setError(getString(R.string.QQ_cannot_null));
 				}
 				dialog.show();
 				new Thread(new Runnable() {
@@ -91,6 +95,7 @@ public class RegisterActivity extends ActionBarActivity {
 						params.put("user.password", password);
 						params.put("user.question", question);
 						params.put("user.answer", answer);
+						params.put("user.QQ", qq);
 						String result = new ServerHelper().getResult(path,
 								params);
 						int result_code = JsonUtil.getResultCode(result);
@@ -105,7 +110,8 @@ public class RegisterActivity extends ActionBarActivity {
 	}
 
 	private void init() {
-		getSupportActionBar().setTitle(new StringBuffer(getString(R.string.register_button)));
+		getSupportActionBar().setTitle(
+				new StringBuffer(getString(R.string.register_button)));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		etusername = (EditText) findViewById(R.id.name);
 		etpassword = (EditText) findViewById(R.id.password);
@@ -113,6 +119,7 @@ public class RegisterActivity extends ActionBarActivity {
 		validationQuestion = (EditText) findViewById(R.id.validation_question);
 		validationAnswer = (EditText) findViewById(R.id.validation_answer);
 		registerButton = (Button) findViewById(R.id.register);
+		qqNumber = (EditText) findViewById(R.id.QQ);
 		dialog = new ProgressDialog(RegisterActivity.this);
 		dialog.setTitle(getString(R.string.register_upload_message));
 		dialog.setMessage(new StringBuffer(getString(R.string.register_wait)));
@@ -155,17 +162,16 @@ public class RegisterActivity extends ActionBarActivity {
 		};
 
 	}
-	
 
-	public boolean onOptionsItemSelected(MenuItem item) {  
-	    switch (item.getItemId()) {  
-	    case android.R.id.home:  
-	        if(NavUtils.getParentActivityName(RegisterActivity.this)!=null){
-	        	NavUtils.navigateUpFromSameTask(RegisterActivity.this);
-	        }
-	        return true;
-	        default:
-	        	return super.onOptionsItemSelected(item);
-	    } 	    
-	}  
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(RegisterActivity.this) != null) {
+				NavUtils.navigateUpFromSameTask(RegisterActivity.this);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 }

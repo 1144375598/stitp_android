@@ -7,9 +7,9 @@
 
     <LinearLayout
         android:layout_width="250dip"
-        android:layout_height="250dip"
+        android:layout_height="300dip"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="120dip"
+        android:layout_marginTop="70dip"
         android:orientation="vertical" >
 
         <EditText
@@ -47,6 +47,13 @@
             android:layout_width="match_parent"
             android:layout_height="50dip"
             android:hint="@string/validation_answer"
+            android:singleLine="true" />
+        <EditText
+            android:id="@+id/QQ"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:hint="@string/QQ_number"
+            android:inputType="number"
             android:singleLine="true" />
     </LinearLayout>
 

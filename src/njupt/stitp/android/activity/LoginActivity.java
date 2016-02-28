@@ -4,13 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.User;
-import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.Activity;
@@ -19,7 +18,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -132,7 +130,6 @@ public class LoginActivity extends Activity {
 						params.put("user.password", password);
 						String result = new ServerHelper().getResult(path,
 								params);
-						Log.i("login result",result);
 						int result_code = JsonUtil.getResultCode(result);
 						Message message = new Message();
 						message.what = result_code;

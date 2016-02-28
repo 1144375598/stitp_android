@@ -63,54 +63,55 @@
         <activity android:name=".activity.RegisterActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.LoginActivity" />
+                android:value=".activity.LoginActivity" />
         </activity>
         <activity android:name=".activity.FunctionActivity" />
         <activity android:name=".activity.ResetPwdActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.LoginActivity" />
+                android:value=".activity.LoginActivity" />
         </activity>
         <activity android:name=".activity.TrackActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.FunctionActivity" />
+                android:value=".activity.FunctionActivity" />
         </activity>
         <activity android:name=".activity.AppActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.FunctionActivity" />
+                android:value=".activity.FunctionActivity" />
         </activity>
-        <activity android:name=".activity.GeoListActivity" >
+        <activity android:name=".activity.GeoActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.TrackActivity" />
-        </activity>
-        <activity android:name=".activity.AddGeoActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.GeoListActivity" />
+                android:value=".activity.TrackActivity" />
         </activity>
         <activity android:name=".activity.OtherFunctionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.FunctionActivity" />
+                android:value=".activity.FunctionActivity" />
         </activity>
         <activity android:name=".activity.UseControlActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.FunctionActivity" />
+                android:value=".activity.FunctionActivity" />
         </activity>
         <activity android:name=".activity.AddUseControlActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avtivity.UseControlActivity" />
+                android:value=".activity.UseControlActivity" />
+        </activity>
+        <activity android:name=".activity.AddFriendActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.FunctionActivity" />
         </activity>
 
         <service android:name=".service.GetAPPMsgService" />
         <service android:name=".service.TrackService" />
         <service android:name=".service.LockService" />
         <service android:name=".service.ProtectEyeService" />
+        <service android:name=".service.AddFriendService" />
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"

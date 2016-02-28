@@ -12,7 +12,9 @@ import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.service.AddFriendService;
 import njupt.stitp.android.service.LockService;
 import njupt.stitp.android.service.ProtectEyeService;
+import njupt.stitp.android.service.TrackService;
 import njupt.stitp.android.util.ServerHelper;
+import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -37,6 +39,8 @@ public class PushReceiver extends PushMessageReceiver {
 	public static final int REQUEST_ADD_FRIEND = 11;
 	public static final int ADD_FRIEND_RESULT = 12;
 	public static final int PARENT_LIST_CHANGE=13;
+	public static final int OUT_OF_RANGE=14;
+	public static final int GEO_CHANGE=15;
 
 	/**
 	 * 调用 PushManager.startWorkPushManager.startWork PushManager.startWork后，sdk
@@ -197,6 +201,20 @@ public class PushReceiver extends PushMessageReceiver {
 			RelationshipDB relationshipDB=new RelationshipDB(context);
 			relationshipDB.deleteFriend(parentName, username);
 			relationshipDB.close();
+			break;
+		case OUT_OF_RANGE:
+			String childName=customJson.getString("childName");
+			i=new Intent(context,TrackService.class);
+			i.setAction(TrackService.OUT_OF_RANGE_ACTION);
+			i.putExtra("username", childName);
+			context.startService(i);
+			break;
+		case GEO_CHANGE:
+			String changeName=customJson.getString("changeName");
+			i=new Intent(context,TrackService.class);
+			i.setAction(TrackService.DOWNLOAD_GEO_ACTION);
+			i.putExtra("username", changeName);
+			context.startService(i);
 			break;
 		default:
 			break;

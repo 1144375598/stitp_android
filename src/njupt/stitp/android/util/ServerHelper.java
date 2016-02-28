@@ -21,7 +21,7 @@ import android.util.Base64;
 import com.google.gson.Gson;
 
 public class ServerHelper {
-	private static final String base = "http://192.168.1.106:8080/NJUPT_STITP_Server/";
+	private static final String base = "http://192.168.43.58:8080/NJUPT_STITP_Server/";
 
 	// 服务器无返回结果则返回状态代码，有返回值则返回json字符串
 	public String getResult(String path, Map<String, String> params) {

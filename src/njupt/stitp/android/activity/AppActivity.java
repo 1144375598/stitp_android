@@ -18,7 +18,9 @@ import njupt.stitp.android.util.ServerHelper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -117,10 +119,10 @@ public class AppActivity extends ActionBarActivity {
 		nextDay = (Button) findViewById(R.id.next_day);
 		lastDay = (Button) findViewById(R.id.last_day);
 		appMsgList = (ListView) findViewById(R.id.app_msg_list);
-		
+
 		appDB = new AppDB(this);
-		userDB=new UserDB(this);
-		
+		userDB = new UserDB(this);
+
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -177,7 +179,7 @@ public class AppActivity extends ActionBarActivity {
 	private void getApps(String name, Date date) {
 		tempDate = date;
 		tempName = name;
-		
+
 		List<APP> apps = appDB.getMessage(name, date);
 		if (apps.size() == 0) {
 			new Thread(new Runnable() {
@@ -196,7 +198,7 @@ public class AppActivity extends ActionBarActivity {
 						msg.what = new Integer(resultCode);
 						handler.sendMessage(msg);
 					} else {
-						List<APP> apps2 = JsonUtil.getApps(result);						
+						List<APP> apps2 = JsonUtil.getApps(result);
 						appDB.updateMessage(tempName, apps2);
 						Message msg = new Message();
 						msg.what = 0;
@@ -212,6 +214,19 @@ public class AppActivity extends ActionBarActivity {
 			handler.sendMessage(msg);
 		}
 	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (NavUtils.getParentActivityName(AppActivity.this) != null) {
+				NavUtils.navigateUpFromSameTask(AppActivity.this);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
 	@Override
 	protected void onDestroy() {
 		appDB.close();
