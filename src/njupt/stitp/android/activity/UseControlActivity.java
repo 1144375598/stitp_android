@@ -8,10 +8,12 @@ import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.UseControlDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.UseTimeControl;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
@@ -57,7 +59,6 @@ public class UseControlActivity extends ActionBarActivity {
 		username = ((MyApplication) getApplication()).getUsername();
 		loginName = username;
 
-		initSpinner();
 		setListView(username);
 		registerForContextMenu(controlTimelist);
 		selectChild.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -112,8 +113,7 @@ public class UseControlActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		names = userDB.getChildNames(username);
-		names.add(username);
+		names = userDB.getAllUserName(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				UseControlActivity.this, android.R.layout.simple_spinner_item,
 				names);
@@ -176,14 +176,24 @@ public class UseControlActivity extends ActionBarActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		initSpinner();
+		super.onResume();
+	}
+
+	@Override
 	protected void onDestroy() {
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
+
+				if (!JudgeState.isNetworkConnected(getApplicationContext())) {
+					return;
+				}
 				String path = "uploadInfo/useTimeControlInfo";
 				ServerHelper serverHelper = new ServerHelper();
-				List<String> childName = userDB.getChildNames(loginName);
+				List<String> childName = userDB.getChildName(loginName);
 				for (String name : childName) {
 					List<UseTimeControl> list = useControlDB
 							.getUseTimeControl(name);

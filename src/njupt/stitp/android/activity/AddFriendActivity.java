@@ -10,7 +10,9 @@ import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.RelationshipDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.Friend;
+import njupt.stitp.android.model.User;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.AlertDialog;
@@ -88,6 +90,11 @@ public class AddFriendActivity extends ActionBarActivity {
 							getString(R.string.addfriend_user_not_exist),
 							Toast.LENGTH_SHORT).show();
 					break;
+				case MyApplication.NETWORK_DISCONNECT:
+					Toast.makeText(AddFriendActivity.this,
+							getString(R.string.network_disconnect),
+							Toast.LENGTH_SHORT).show();
+					break;
 				default:
 					break;
 				}
@@ -119,6 +126,13 @@ public class AddFriendActivity extends ActionBarActivity {
 
 						@Override
 						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {
+								Message msg = new Message();
+								msg.what = MyApplication.NETWORK_DISCONNECT;
+								handler.sendMessage(msg);
+								return;
+							}
 							String path = "user/addFriend";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", loginName);
@@ -145,9 +159,11 @@ public class AddFriendActivity extends ActionBarActivity {
 	private void setListView() {
 		List<Friend> list = relationshipDB.getFriend(loginName);
 		friendList.removeAllViewsInLayout();
-		FriendAdapter adapter = new FriendAdapter(this,
-				R.layout.item_controltime, list);
-		friendList.setAdapter(adapter);
+		if (list != null && list.size() != 0) {
+			FriendAdapter adapter = new FriendAdapter(this,
+					R.layout.item_friend, list);
+			friendList.setAdapter(adapter);
+		}
 	}
 
 	@Override
@@ -179,6 +195,13 @@ public class AddFriendActivity extends ActionBarActivity {
 
 					@Override
 					public void run() {
+						if (!JudgeState
+								.isNetworkConnected(getApplicationContext())) {
+							Message msg = new Message();
+							msg.what = MyApplication.NETWORK_DISCONNECT;
+							handler.sendMessage(msg);
+							return;
+						}
 						String path = "user/deleteChild";
 						Map<String, String> params = new HashMap<String, String>();
 						params.put("user.username", loginName);
@@ -187,6 +210,7 @@ public class AddFriendActivity extends ActionBarActivity {
 					}
 				}).start();
 				relationshipDB.deleteFriend(loginName, tempFriendName);
+				userDB.deleteUser(tempFriendName);
 				setListView();
 			}
 			break;
@@ -220,6 +244,13 @@ public class AddFriendActivity extends ActionBarActivity {
 
 								@Override
 								public void run() {
+									if (!JudgeState
+											.isNetworkConnected(getApplicationContext())) {
+										Message msg = new Message();
+										msg.what = MyApplication.NETWORK_DISCONNECT;
+										handler.sendMessage(msg);
+										return;
+									}
 									String path = "user/addFriendResult";
 									Map<String, String> params = new HashMap<String, String>();
 									params.put("user.username", requestName);
@@ -233,12 +264,27 @@ public class AddFriendActivity extends ActionBarActivity {
 											.equals(relationship, "parent")) {
 										relationshipDB.addRelationship(
 												loginName, requestName);
+										Log.i("addFriendActivity addParent",
+												"add parent");
 									} else if (TextUtils.equals(relationship,
 											"child")) {
 										relationshipDB.addRelationship(
 												requestName, loginName);
+										Log.i("addFriendActivity addChild",
+												"add child");
+									} else {
+										Log.i("relationship", relationship);
 									}
 									relationshipDB.close();
+									path = "user/getUser";
+									params = new HashMap<String, String>();
+									params.put("user.username", requestName);
+									String result = new ServerHelper()
+											.getResult(path, params);
+									User user = JsonUtil.getUser(result);
+									if (user != null) {
+										userDB.addUser(user, null);
+									}
 									AddFriendActivity.this.finish();
 								}
 							}).start();
@@ -253,6 +299,13 @@ public class AddFriendActivity extends ActionBarActivity {
 
 								@Override
 								public void run() {
+									if (!JudgeState
+											.isNetworkConnected(getApplicationContext())) {
+										Message msg = new Message();
+										msg.what = MyApplication.NETWORK_DISCONNECT;
+										handler.sendMessage(msg);
+										return;
+									}
 									String path = "user/addFriendResult";
 									Map<String, String> params = new HashMap<String, String>();
 									params.put("user.username", requestName);

@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.TrackDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.Track;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ReceiverView;
 import njupt.stitp.android.util.ServerHelper;
@@ -90,7 +92,6 @@ public class TrackActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_track);
 
 		initLayout();// 初始化布局与handler
-		initSpinner();// 初始化spinner
 		initDate();
 		setLoaction();// 设置当前位置
 		selectChild.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -213,8 +214,7 @@ public class TrackActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		names = userDB.getChildNames(username);
-		names.add(username);
+		names = userDB.getAllUserName(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				TrackActivity.this, android.R.layout.simple_spinner_item, names);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -325,6 +325,11 @@ public class TrackActivity extends ActionBarActivity {
 							getString(R.string.none_track), Toast.LENGTH_LONG)
 							.show();
 					break;
+				case MyApplication.NETWORK_DISCONNECT:
+					Toast.makeText(TrackActivity.this,
+							getString(R.string.network_disconnect),
+							Toast.LENGTH_SHORT).show();
+					break;
 				default:
 					break;
 				}
@@ -349,7 +354,7 @@ public class TrackActivity extends ActionBarActivity {
 		case R.id.item_geo:
 			Intent intent = new Intent(this, GeoActivity.class);
 			intent.putExtra("username", name);
-			startService(intent);
+			startActivity(intent);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -385,6 +390,12 @@ public class TrackActivity extends ActionBarActivity {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					if (!JudgeState.isNetworkConnected(getApplicationContext())) {
+						Message msg = new Message();
+						msg.what = MyApplication.NETWORK_DISCONNECT;
+						handler.sendMessage(msg);
+						return;
+					}
 					path = "downloadInfo/trackInfo";
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("user.username", tempName);
@@ -455,6 +466,7 @@ public class TrackActivity extends ActionBarActivity {
 
 	@Override
 	protected void onResume() {
+		initSpinner();
 		// 在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
 		mMapView.onResume();
 		super.onResume();

@@ -1,8 +1,5 @@
 package njupt.stitp.android.db;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import njupt.stitp.android.model.GeoFencing;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,7 +18,7 @@ public class GeoDB {
 	}
 
 	public void saveGeo(String username, GeoFencing geoFencing) {
-		String insert = "insert into GeoFencing(username,longitude,latitude,distance,address) values(?,?,?,?,?,?)";
+		String insert = "insert into GeoFencing(username,longitude,latitude,distance,address) values(?,?,?,?,?)";
 		wdb.execSQL("delete from GeoFencing where username=?",
 				new Object[] { username });
 		wdb.execSQL(

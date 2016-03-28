@@ -8,6 +8,7 @@ import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.OptionDB;
 import njupt.stitp.android.db.UserDB;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
@@ -92,7 +93,8 @@ public class OtherFunctionActivity extends ActionBarActivity {
 		continueUseView = (TextView) findViewById(R.id.tv_continue_use_time);
 		userDB = new UserDB(this);
 		optionDB = new OptionDB(this);
-		initSpinner();
+		loginName = ((MyApplication) getApplication()).getUsername();
+		username = loginName;
 		setOption();
 
 		handler = new Handler() {
@@ -243,16 +245,28 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 					@Override
 					public void onClick(View v) {
-						/*
-						 * if (username.equals(loginName)) { Message message =
-						 * new Message(); message.what = 4;
-						 * handler.sendMessage(message); setOption(); return; }
-						 */
+
+						if (username.equals(loginName)) {
+							Message message = new Message();
+							message.what = 4;
+							handler.sendMessage(message);
+							setOption();
+							return;
+						}
+
 						if (voiceControl.isChecked()) {
 							new Thread(new Runnable() {
 
 								@Override
 								public void run() {
+									if (!JudgeState
+											.isNetworkConnected(getApplicationContext())) {
+										Message message = new Message();
+										message.what = OPEN_VOICECONTROL_FAIL;
+										handler.sendMessage(message);
+										optionDB.setVoiceControl(username, 0);
+										return;
+									}
 									String path = "user/bumpRemind";
 									Map<String, String> params = new HashMap<String, String>();
 									params.put("user.username", username);
@@ -277,6 +291,14 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 								@Override
 								public void run() {
+									if (!JudgeState
+											.isNetworkConnected(getApplicationContext())) {
+										Message message = new Message();
+										message.what = CLOSE_VOICECONTROL_FAIL;
+										handler.sendMessage(message);
+										optionDB.setVoiceControl(username, 0);
+										return;
+									}
 									String path = "user/bumpRemind";
 									Map<String, String> params = new HashMap<String, String>();
 									params.put("user.username", username);
@@ -303,16 +325,28 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				/*
-				 * if (username.equals(loginName)) { Message message = new
-				 * Message(); message.what = 4; handler.sendMessage(message);
-				 * setOption(); return; }
-				 */
+
+				if (username.equals(loginName)) {
+					Message message = new Message();
+					message.what = 4;
+					handler.sendMessage(message);
+					setOption();
+					return;
+				}
+
 				if (bumpRemind.isChecked()) {
 					new Thread(new Runnable() {
 
 						@Override
 						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {
+								Message message = new Message();
+								message.what = OPEN_BUMPREMIND_FAIL;
+								handler.sendMessage(message);
+								optionDB.setBumpRemind(username, 0);
+								return;
+							}
 							String path = "user/bumpRemind";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
@@ -337,6 +371,14 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 						@Override
 						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {
+								Message message = new Message();
+								message.what = CLOSE_BUMPREMIND_FAIL;
+								handler.sendMessage(message);
+								optionDB.setBumpRemind(username, 1);
+								return;
+							}
 							String path = "user/bumpRemind";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
@@ -363,16 +405,28 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				/*
-				 * if (username.equals(loginName)) { Message message = new
-				 * Message(); message.what = 4; handler.sendMessage(message);
-				 * setOption(); return; }
-				 */
+
+				if (username.equals(loginName)) {
+					Message message = new Message();
+					message.what = 4;
+					handler.sendMessage(message);
+					setOption();
+					return;
+				}
+
 				if (lockScreen.isChecked()) {
 					new Thread(new Runnable() {
 
 						@Override
 						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {
+								Message message = new Message();
+								message.what = OPEN_LOCK_FAIL;
+								handler.sendMessage(message);
+								optionDB.setLockScreen(username, 0);
+								return;
+							}
 							String lockPwd = userDB.getUser(username)
 									.getLockPwd();
 							String path = "user/lockScreen";
@@ -404,6 +458,14 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 						@Override
 						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {
+								Message message = new Message();
+								message.what = CLOSE_LOCK_FAIL;
+								handler.sendMessage(message);
+								optionDB.setLockScreen(username, 1);
+								return;
+							}
 							String path = "user/unlockScreen";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
@@ -430,11 +492,15 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				/*
-				 * if (username.equals(loginName)) { Message message = new
-				 * Message(); message.what = 4; handler.sendMessage(message);
-				 * setOption(); return; }
-				 */
+
+				if (username.equals(loginName)) {
+					Message message = new Message();
+					message.what = 4;
+					handler.sendMessage(message);
+					setOption();
+					return;
+				}
+
 				if (continueUse.isChecked()) {
 					if (userDB.getUser(username).getTimeOfContinuousUse() == 0) {
 						Toast.makeText(OtherFunctionActivity.this,
@@ -447,6 +513,14 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 						@Override
 						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {
+								Message message = new Message();
+								message.what = OPEN_USETIME_FAIL;
+								handler.sendMessage(message);
+								optionDB.setContinueUse(username, 0);
+								return;
+							}
 							String path = "user/continueUseTime";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
@@ -471,6 +545,14 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 						@Override
 						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {
+								Message message = new Message();
+								message.what = CLOSE_USETIME_FAIL;
+								handler.sendMessage(message);
+								optionDB.setContinueUse(username, 1);
+								return;
+							}
 							String path = "user/continueUseTime";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
@@ -499,11 +581,14 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 					@Override
 					public void onClick(View v) {
-						/*
-						 * if (username.equals(loginName)) { Message message =
-						 * new Message(); message.what = 4;
-						 * handler.sendMessage(message); return; }
-						 */
+
+						if (username.equals(loginName)) {
+							Message message = new Message();
+							message.what = 4;
+							handler.sendMessage(message);
+							return;
+						}
+
 						final EditText editText = new EditText(
 								OtherFunctionActivity.this);
 						editText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -535,6 +620,13 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 													@Override
 													public void run() {
+														if (!JudgeState
+																.isNetworkConnected(getApplicationContext())) {
+															Message message = new Message();
+															message.what = SET_USETIME_FAIL;
+															handler.sendMessage(message);
+															return;
+														}
 														Integer useTime = Integer
 																.valueOf(editText
 																		.getText()
@@ -625,11 +717,14 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				/*
-				 * if (username.equals(loginName)) { Message message = new
-				 * Message(); message.what = 4; handler.sendMessage(message);
-				 * return; }
-				 */
+
+				if (username.equals(loginName)) {
+					Message message = new Message();
+					message.what = 4;
+					handler.sendMessage(message);
+					return;
+				}
+
 				final EditText editText = new EditText(
 						OtherFunctionActivity.this);
 				editText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -648,6 +743,13 @@ public class OtherFunctionActivity extends ActionBarActivity {
 
 											@Override
 											public void run() {
+												if (!JudgeState
+														.isNetworkConnected(getApplicationContext())) {
+													Message message = new Message();
+													message.what = SET_LOCKPWD_FAIL;
+													handler.sendMessage(message);
+													return;
+												}
 												String lockPwd = editText
 														.getText().toString();
 
@@ -692,10 +794,7 @@ public class OtherFunctionActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		loginName = ((MyApplication) getApplication()).getUsername();
-		username = loginName;
-		names = userDB.getChildNames(username);
-		names.add(username);
+		names = userDB.getAllUserName(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				OtherFunctionActivity.this,
 				android.R.layout.simple_spinner_item, names);
@@ -736,7 +835,9 @@ public class OtherFunctionActivity extends ActionBarActivity {
 			lockPwdView.setText("****");
 		}
 		int time = 0;
-		time = userDB.getUser(username).getTimeOfContinuousUse();
+		if (userDB.getUser(username) != null) {
+			time = userDB.getUser(username).getTimeOfContinuousUse();
+		}
 		if (time == 0) {
 			continueUseView.setText(R.string.not_set);
 		} else {
@@ -754,6 +855,12 @@ public class OtherFunctionActivity extends ActionBarActivity {
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		initSpinner();
+		super.onResume();
 	}
 
 	@Override

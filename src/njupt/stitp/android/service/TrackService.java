@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.GeoDB;
 import njupt.stitp.android.db.TrackDB;
 import njupt.stitp.android.model.GeoFencing;
 import njupt.stitp.android.model.Track;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.Notification;
@@ -93,11 +95,11 @@ public class TrackService extends Service {
 		lastAddress = null;
 
 		GeoFencing geoFencing = geoDB.getGeo(username);
-		if(geoFencing!=null){
+		if (geoFencing != null) {
 			geoCenter = new LatLng(geoFencing.getLatitude(),
 					geoFencing.getLongitude());
 			distance = geoFencing.getDistance();
-		}	
+		}
 		mLocationClient = new LocationClient(getApplicationContext()); // 声明LocationClient类
 		mLocationClient.registerLocationListener(myListener); // 注册监听函数
 		initLocation();
@@ -106,10 +108,10 @@ public class TrackService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String action=null;
-		if(intent!=null){
+		String action = null;
+		if (intent != null) {
 			action = intent.getAction();
-		}		
+		}
 		if (TextUtils.equals(action, UPLOAD_GEO_ACTION)) {
 			String username = intent.getExtras().getString("username");
 			uploadGeo(username);
@@ -147,7 +149,7 @@ public class TrackService extends Service {
 			// 离线定位或网络定位成功
 			if (location.getLocType() == BDLocation.TypeOffLineLocation
 					|| location.getLocType() == BDLocation.TypeNetWorkLocation) {
-				if (outOfRange == false&&geoCenter!=null) {
+				if (outOfRange == false && geoCenter != null) {
 					double distance2 = DistanceUtil.getDistance(
 							geoCenter,
 							new LatLng(location.getLatitude(), location
@@ -178,13 +180,18 @@ public class TrackService extends Service {
 				}
 			}
 			if (tracks.size() >= 60
-					||(tracks.size()>0&&tracks.get(tracks.size() - 1).getStayTime() >= 60) ) {
+					|| (tracks.size() > 0 && tracks.get(tracks.size() - 1)
+							.getStayTime() >= 60)) {
 				lastAddress = null;
 				unCommitTracks = trackDB.getUncommitTrack(username);
 				new Thread(new Runnable() {
 
 					@Override
 					public void run() {
+						if (!JudgeState
+								.isNetworkConnected(getApplicationContext())) {
+							return;
+						}
 						Boolean flag;
 						if (unCommitTracks.size() > 0) {
 							flag = serverHelper.uploadTrackAndAPP(path,
@@ -218,6 +225,9 @@ public class TrackService extends Service {
 
 			@Override
 			public void run() {
+				if (!JudgeState.isNetworkConnected(getApplicationContext())) {
+					return;
+				}
 				String path = "downloadInfo/geoFencingInfo";
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("user.username", name2);
@@ -239,6 +249,9 @@ public class TrackService extends Service {
 
 			@Override
 			public void run() {
+				if (!JudgeState.isNetworkConnected(getApplicationContext())) {
+					return;
+				}
 				String path = "uploadInfo/geoFencingInfo";
 				GeoFencing geoFencing = geoDB.getGeo(name2);
 				if (geoFencing == null) {
@@ -252,6 +265,7 @@ public class TrackService extends Service {
 				params.put("geoFencing.distance", geoFencing.getDistance() + "");
 				params.put("geoFencing.address", geoFencing.getAddress());
 				new ServerHelper().getResult(path, params);
+				Log.i("upload geo","");
 			}
 		}).start();
 	}
@@ -261,6 +275,9 @@ public class TrackService extends Service {
 
 			@Override
 			public void run() {
+				if (!JudgeState.isNetworkConnected(getApplicationContext())) {
+					return;
+				}
 				String path = "user/outOfRange";
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("user.username", username);

@@ -16,6 +16,7 @@
     <string name="connect_server_fail">登录失败，连接服务器出错</string>
     <string name="username_is_null">对不起，用户名不能为空</string>
     <string name="password_is_null">对不起，密码不能为空</string>
+    <string name="network_disconnect">网络不可用，请打开网络</string>
 
     <!-- RegisterActivity -->
     <string name="validation_question">请输入验证问题</string>
@@ -61,6 +62,7 @@
     <string name="city">城市</string>
     <string name="address">地址</string>
     <string name="save">保存</string>
+    <string name="wait">请稍候</string>
 
     <!-- AppInfoActivity -->
     <string name="refresh">刷新</string>

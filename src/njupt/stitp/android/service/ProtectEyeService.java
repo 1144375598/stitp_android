@@ -15,6 +15,7 @@ import njupt.stitp.android.db.UseControlDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.Service;
 import android.content.Intent;
@@ -158,6 +159,10 @@ public class ProtectEyeService extends Service {
 
 				@Override
 				public void run() {
+					if (!JudgeState
+							.isNetworkConnected(getApplicationContext())) {						
+						return;
+					}
 					String path = "downloadInfo/useTimeControlInfo";
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("user.username", username);

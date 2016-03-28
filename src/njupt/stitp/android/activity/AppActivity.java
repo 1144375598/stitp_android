@@ -9,10 +9,12 @@ import java.util.Map;
 
 import njupt.stitp.android.R;
 import njupt.stitp.android.adapter.AppAdapter;
+import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.AppDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.APP;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
 import android.os.Bundle;
@@ -55,7 +57,6 @@ public class AppActivity extends ActionBarActivity {
 		MyActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.activity_appmsg);
 		initLayout();
-		initSpinner();// 初始化spinner
 		initDate();
 		initList();
 		selectChild.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -146,6 +147,11 @@ public class AppActivity extends ActionBarActivity {
 							getString(R.string.none_appmsg), Toast.LENGTH_SHORT)
 							.show();
 					break;
+				case MyApplication.NETWORK_DISCONNECT:
+					Toast.makeText(AppActivity.this,
+							getString(R.string.network_disconnect),
+							Toast.LENGTH_SHORT).show();
+					break;
 				default:
 					break;
 				}
@@ -163,8 +169,7 @@ public class AppActivity extends ActionBarActivity {
 	}
 
 	private void initSpinner() {
-		names = userDB.getChildNames(username);
-		names.add(username);
+		names = userDB.getAllUserName(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				AppActivity.this, android.R.layout.simple_spinner_item, names);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -186,6 +191,12 @@ public class AppActivity extends ActionBarActivity {
 
 				@Override
 				public void run() {
+					if(!JudgeState.isNetworkConnected(getApplicationContext())){
+						Message msg=new Message();
+						msg.what=MyApplication.NETWORK_DISCONNECT;
+						handler.sendMessage(msg);
+						return;
+					}
 					path = "downloadInfo/appInfo";
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("user.username", tempName);
@@ -226,7 +237,11 @@ public class AppActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
+	@Override
+	protected void onResume() {
+		initSpinner();
+		super.onResume();
+	}
 	@Override
 	protected void onDestroy() {
 		appDB.close();

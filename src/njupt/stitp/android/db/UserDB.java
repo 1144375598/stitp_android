@@ -41,6 +41,7 @@ public class UserDB {
 		values.put("timeOfContinuousListen", user.getTimeOfContinuousListen());
 		values.put("channelId", user.getChannelId());
 		values.put("lockPwd", user.getLockPwd());
+		values.put("QQ", user.getQQ());
 		wdb.insert("user", null, values);
 		if (username != null) {
 			ContentValues values2 = new ContentValues();
@@ -57,7 +58,22 @@ public class UserDB {
 		}
 	}
 
-	public List<String> getChildNames(String username) {
+	public List<String> getAllUserName(String username) {
+		List<String> names = new ArrayList<String>();
+		names.add(username);
+		Cursor cursor = rdb.rawQuery(
+				"select childname from relationship where parentname=?",
+				new String[] { username });
+		if (cursor.moveToFirst()) {
+			do {
+				names.add(cursor.getString(cursor.getColumnIndex("childname")));
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		return names;
+	}
+
+	public List<String> getChildName(String username) {
 		List<String> names = new ArrayList<String>();
 		Cursor cursor = rdb.rawQuery(
 				"select childname from relationship where parentname=?",
@@ -83,6 +99,7 @@ public class UserDB {
 					.getColumnIndex("timeOfContinuousListen")));
 			user.setChannelId(cursor.getString(cursor
 					.getColumnIndex("channelId")));
+			user.setQQ(cursor.getString(cursor.getColumnIndex("QQ")));
 			user.setLockPwd(cursor.getString(cursor.getColumnIndex("lockPwd")));
 		} else {
 			cursor.close();
@@ -114,6 +131,11 @@ public class UserDB {
 		} else {
 			return true;
 		}
+	}
+
+	public void deleteUser(String username) {
+		wdb.execSQL("delete from user where username=?",
+				new String[] { username });
 	}
 
 	public void close() {

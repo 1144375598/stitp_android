@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.ProgressDialog;
@@ -65,6 +67,13 @@ public class ResetPwdActivity extends ActionBarActivity {
 				dialog.show();
 				new Thread(new Runnable() {
 					public void run() {
+						if (!JudgeState
+								.isNetworkConnected(getApplicationContext())) {
+							Message msg = new Message();
+							msg.what = MyApplication.NETWORK_DISCONNECT;
+							handler.sendMessage(msg);
+							return;
+						}
 						path = "user/resetPassword";
 						Map<String, String> params = new HashMap<String, String>();
 						params.put("user.username", username);
@@ -109,7 +118,11 @@ public class ResetPwdActivity extends ActionBarActivity {
 							LoginActivity.class);
 					startActivity(intent);
 					break;
-
+				case MyApplication.NETWORK_DISCONNECT:
+					Toast.makeText(ResetPwdActivity.this,
+							getString(R.string.network_disconnect),
+							Toast.LENGTH_SHORT).show();
+					break;
 				default:
 					Toast.makeText(ResetPwdActivity.this,
 							getString(R.string.password_reset_fail),

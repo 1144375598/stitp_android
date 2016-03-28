@@ -9,7 +9,8 @@ import com.baidu.mapapi.SDKInitializer;
 public class MyApplication extends Application {
 	private long time;
 	private String username;
-	
+	public static final int NETWORK_DISCONNECT = 10001;
+
 	public long getTime() {
 		return time;
 	}
@@ -22,7 +23,7 @@ public class MyApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		SDKInitializer.initialize(getApplicationContext());
-		time=new Date().getTime();
+		time = new Date().getTime();
 	}
 
 	public String getUsername() {

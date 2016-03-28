@@ -14,7 +14,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 	private static final String CREATE_USER = "CREATE table  user" + "("
 			+ "username text primary key," + "timeOfContinuousUse integer,"
 			+ "timeOfContinuousListen integer,"
-			+ "channelId  text, lockPwd text)";
+			+ "channelId  text, lockPwd text,QQ text)";
 
 	private static final String CREATE_USETIMECONTROL = "CREATE table  useTimeControl"
 			+ "( "

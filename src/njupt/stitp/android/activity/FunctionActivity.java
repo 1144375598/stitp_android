@@ -6,6 +6,7 @@ import java.util.List;
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.OptionDB;
+import njupt.stitp.android.db.RelationshipDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.service.GetAPPMsgService;
 import njupt.stitp.android.service.LockService;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,6 +51,7 @@ public class FunctionActivity extends ActionBarActivity {
 	private List<String> names;
 	private UserDB userDB;
 	private OptionDB optionDB;
+	private RelationshipDB relationshipDB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +60,6 @@ public class FunctionActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_function);
 		init();
 		startServices();
-
-		initSpinner();
 		track.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -96,7 +97,8 @@ public class FunctionActivity extends ActionBarActivity {
 				if (TextUtils.equals(name, username)) {
 					Toast.makeText(FunctionActivity.this,
 							getString(R.string.cannot_chat_to_self),
-							Toast.LENGTH_SHORT).show();;
+							Toast.LENGTH_SHORT).show();
+					;
 					return;
 				}
 				String QQ = userDB.getUser(name).getQQ();
@@ -123,7 +125,7 @@ public class FunctionActivity extends ActionBarActivity {
 	}
 
 	private void init() {
-		username = getIntent().getExtras().getString("username");
+		username = ((MyApplication) getApplication()).getUsername();
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		useTime = (Chronometer) findViewById(R.id.usetimeChronometer);
 		track = (Button) findViewById(R.id.function_location);
@@ -132,6 +134,7 @@ public class FunctionActivity extends ActionBarActivity {
 		chat = (Button) findViewById(R.id.function_chat);
 		userDB = new UserDB(this);
 		optionDB = new OptionDB(this);
+		relationshipDB = new RelationshipDB(this);
 
 		// 百度云推送服务
 		PushManager.startWork(getApplicationContext(),
@@ -153,16 +156,24 @@ public class FunctionActivity extends ActionBarActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		initSpinner();
+		super.onResume();
+	}
+
+	@Override
 	protected void onDestroy() {
 		useTime.stop();
 		userDB.close();
 		optionDB.close();
+		relationshipDB.close();
+		Log.i("Function activity", "destory");
 		super.onDestroy();
 	}
 
 	private void initSpinner() {
-		names = userDB.getChildNames(username);
-		names.add(username);
+		Log.i("update spinner", "update spinner");
+		names = relationshipDB.getFriendName(username);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 				FunctionActivity.this, android.R.layout.simple_spinner_item,
 				names);

@@ -6,6 +6,7 @@ import java.util.Map;
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.service.GetAPPMsgService;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.SPHelper;
@@ -89,6 +90,13 @@ public class RegisterActivity extends ActionBarActivity {
 				dialog.show();
 				new Thread(new Runnable() {
 					public void run() {
+						if (!JudgeState
+								.isNetworkConnected(getApplicationContext())) {
+							Message msg = new Message();
+							msg.what = MyApplication.NETWORK_DISCONNECT;
+							handler.sendMessage(msg);
+							return;
+						}
 						path = "user/register";
 						Map<String, String> params = new HashMap<String, String>();
 						params.put("user.username", username);
@@ -155,6 +163,11 @@ public class RegisterActivity extends ActionBarActivity {
 					Toast.makeText(RegisterActivity.this,
 							getString(R.string.connect_server_fail),
 							Toast.LENGTH_LONG).show();
+					break;
+				case MyApplication.NETWORK_DISCONNECT:
+					Toast.makeText(RegisterActivity.this,
+							getString(R.string.network_disconnect),
+							Toast.LENGTH_SHORT).show();
 					break;
 				}
 				dialog.dismiss();

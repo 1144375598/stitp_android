@@ -21,7 +21,7 @@ public class RelationshipDB {
 	}
 
 	public void addRelationship(String parentName, String childName) {
-		wdb.rawQuery(
+		wdb.execSQL(
 				"insert into relationship(parentname,childname) values (?,?)",
 				new String[] { parentName, childName });
 	}
@@ -58,9 +58,37 @@ public class RelationshipDB {
 	}
 
 	public void deleteFriend(String parentName, String childName) {
-		wdb.rawQuery(
+		wdb.execSQL(
 				"delete from relationship where parentname=? and childname=?",
 				new String[] { parentName, childName });
+	}
+
+	public List<String> getFriendName(String username) {
+		List<String> friends = new ArrayList<String>();
+		friends.add(username);
+		Cursor cursor = rdb.rawQuery(
+				"select parentname from relationship where childname =?",
+				new String[] { username });
+		Cursor cursor2 = rdb.rawQuery(
+				"select childname from relationship where parentname =?",
+				new String[] { username });
+		if (cursor.moveToFirst()) {
+			do {
+				String friend = cursor.getString(cursor
+						.getColumnIndex("parentname"));
+				friends.add(friend);
+			} while (cursor.moveToNext());
+		}
+		if (cursor2.moveToFirst()) {
+			do {
+				String friend = cursor2.getString(cursor2
+						.getColumnIndex("childname"));
+				friends.add(friend);
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		cursor2.close();
+		return friends;
 	}
 
 	public void close() {

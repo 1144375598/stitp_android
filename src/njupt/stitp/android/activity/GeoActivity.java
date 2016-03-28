@@ -5,10 +5,16 @@ import njupt.stitp.android.db.GeoDB;
 import njupt.stitp.android.model.GeoFencing;
 import njupt.stitp.android.service.TrackService;
 import njupt.stitp.android.util.MyActivityManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,7 +28,7 @@ import com.baidu.mapapi.map.CircleOptions;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.Stroke;
+import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeOption;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
@@ -38,6 +44,8 @@ public class GeoActivity extends ActionBarActivity implements
 	private Button confirm;
 	private GeoDB geoDB;
 	private String username;
+	private ProgressDialog p;
+	private Handler handler;
 	private boolean isChanged;
 
 	private GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
@@ -60,6 +68,24 @@ public class GeoActivity extends ActionBarActivity implements
 		geoRange = (EditText) findViewById(R.id.geo_range);
 		confirm = (Button) findViewById(R.id.save);
 
+		handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+				case 0:
+					p.dismiss();
+					break;
+
+				default:
+					break;
+				}
+				super.handleMessage(msg);
+			}
+		};
+
+		p = new ProgressDialog(GeoActivity.this);
+		p.setTitle(getString(R.string.wait));
+
 		// 地图初始化
 		mMapView = (MapView) findViewById(R.id.geo_bmapView);
 		mBaiduMap = mMapView.getMap();
@@ -76,6 +102,8 @@ public class GeoActivity extends ActionBarActivity implements
 				mSearch.geocode(new GeoCodeOption().city(
 						city.getText().toString()).address(
 						address.getText().toString()));
+				p.show();
+				Log.i("GeoActivity", "confirm");
 			}
 		});
 	}
@@ -86,9 +114,18 @@ public class GeoActivity extends ActionBarActivity implements
 			String[] tempGeoCenter = geoFencing.getAddress().split(",");
 			city.setText(tempGeoCenter[0]);
 			address.setText(tempGeoCenter[1]);
-			geoRange.setText(geoFencing.getDistance() + "");
-			mSearch.geocode(new GeoCodeOption().city(tempGeoCenter[0]).address(
-					tempGeoCenter[1]));
+			geoRange.setText((int) geoFencing.getDistance() + "");
+			mBaiduMap.clear();
+			LatLng location = new LatLng(geoFencing.getLongitude(),
+					geoFencing.getLatitude());
+			mBaiduMap.addOverlay(new MarkerOptions().position(location).icon(
+					BitmapDescriptorFactory.fromResource(R.drawable.ic_track)));
+			CircleOptions circleOptions = new CircleOptions();
+			circleOptions.center(location);
+			circleOptions.radius((int) geoFencing.getDistance());
+			circleOptions.fillColor(Color.argb(100, 255, 175, 175));
+			mBaiduMap.addOverlay(circleOptions);
+			mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(location));
 		}
 	}
 
@@ -119,20 +156,36 @@ public class GeoActivity extends ActionBarActivity implements
 
 	@Override
 	public void onGetGeoCodeResult(GeoCodeResult result) {
+		Log.i("onGetGeoResult", "");
+		Message msg = new Message();
+		msg.what = 0;
+		handler.sendMessage(msg);
 		if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
 			Toast.makeText(this, "抱歉，未能找到结果", Toast.LENGTH_LONG).show();
 			isChanged = false;
-			initGeo();
+			return;
+		}
+
+		double longitude = result.getLocation().longitude;
+		double latitude = result.getLocation().latitude;
+		double distance = 0;
+		try {
+			distance = Double.valueOf(geoRange.getText().toString());
+		} catch (NumberFormatException e) {
+			Toast.makeText(GeoActivity.this, "距离设置错误", Toast.LENGTH_SHORT)
+					.show();
+			isChanged = false;
 			return;
 		}
 		mBaiduMap.clear();
-		double longitude = result.getLocation().longitude;
-		double latitude = result.getLocation().latitude;
-		int distance = Integer.valueOf(geoRange.getText().toString());
+		mBaiduMap
+				.addOverlay(new MarkerOptions().position(result.getLocation())
+						.icon(BitmapDescriptorFactory
+								.fromResource(R.drawable.ic_track)));
 		CircleOptions circleOptions = new CircleOptions();
 		circleOptions.center(result.getLocation());
-		circleOptions.radius(distance);
-		circleOptions.stroke(new Stroke(5, 0xAA00FF00));// 设置边框
+		circleOptions.radius((int) distance);
+		circleOptions.fillColor(Color.argb(100, 255, 175, 175));
 		mBaiduMap.addOverlay(circleOptions);
 		mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(result
 				.getLocation()));

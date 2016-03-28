@@ -158,7 +158,6 @@ public class GetAPPMsgService extends Service {
 						}
 						// 将当前运行的应用存入数据库
 						appDB.saveMessage(username, runningApps);
-						Log.i("info", "一次");
 						count++;
 						if (count >= 10) {
 							new Thread(new Runnable() {

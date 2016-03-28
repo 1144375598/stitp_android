@@ -9,6 +9,7 @@ import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.model.User;
 import njupt.stitp.android.util.JsonUtil;
+import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
@@ -36,7 +37,7 @@ public class LoginActivity extends Activity {
 	private SPHelper sPHelper;
 	private String path;
 	private Handler handler;
-	
+
 	private UserDB userDB;
 
 	@Override
@@ -79,6 +80,13 @@ public class LoginActivity extends Activity {
 
 					@Override
 					public void run() {
+						if (!JudgeState
+								.isNetworkConnected(getApplicationContext())) {
+							Message msg = new Message();
+							msg.what = MyApplication.NETWORK_DISCONNECT;
+							handler.sendMessage(msg);
+							return;
+						}
 						path = "user/getValidation";
 						Map<String, String> params = new HashMap<String, String>();
 						params.put("user.username", username);
@@ -124,6 +132,13 @@ public class LoginActivity extends Activity {
 
 					@Override
 					public void run() {
+						if (!JudgeState
+								.isNetworkConnected(getApplicationContext())) {
+							Message msg = new Message();
+							msg.what = MyApplication.NETWORK_DISCONNECT;
+							handler.sendMessage(msg);
+							return;
+						}
 						path = "user/login";
 						Map<String, String> params = new HashMap<String, String>();
 						params.put("user.username", username);
@@ -147,7 +162,7 @@ public class LoginActivity extends Activity {
 		login = (Button) findViewById(R.id.login);
 		register = (Button) findViewById(R.id.register);
 		p = new ProgressDialog(LoginActivity.this);
-		userDB=new UserDB(this);
+		userDB = new UserDB(this);
 		p.setTitle(getString(R.string.loginProgress_title));
 		p.setMessage(new StringBuffer(getString(R.string.loginProgress_message)));
 		handler = new Handler() {
@@ -166,7 +181,11 @@ public class LoginActivity extends Activity {
 					// 如果数据库中无数据，则获取孩子和自己信息
 					new Thread(new Runnable() {
 						@Override
-						public void run() {							
+						public void run() {
+							if (!JudgeState
+									.isNetworkConnected(getApplicationContext())) {							
+								return;
+							}
 							path = "user/getUser";
 							Map<String, String> params = new HashMap<String, String>();
 							params.put("user.username", username);
@@ -213,6 +232,11 @@ public class LoginActivity extends Activity {
 					etusername.setError(new StringBuffer(
 							getString(R.string.username_not_exist)));
 					break;
+				case MyApplication.NETWORK_DISCONNECT:
+					Toast.makeText(LoginActivity.this,
+							getString(R.string.network_disconnect),
+							Toast.LENGTH_SHORT).show();
+					break;
 				}
 				p.dismiss();
 			}
@@ -223,6 +247,7 @@ public class LoginActivity extends Activity {
 	public void onBackPressed() {
 		MyActivityManager.getInstance().finshAllActivities();
 	}
+
 	@Override
 	protected void onDestroy() {
 		userDB.close();

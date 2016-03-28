@@ -3,15 +3,12 @@ package njupt.stitp.android.adapter;
 import java.util.List;
 
 import njupt.stitp.android.R;
-import njupt.stitp.android.model.APP;
 import njupt.stitp.android.model.Friend;
-import njupt.stitp.android.util.IconUtil;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class FriendAdapter extends ArrayAdapter<Friend> {
@@ -37,7 +34,7 @@ public class FriendAdapter extends ArrayAdapter<Friend> {
 		} else {
 			view = convertView;
 			viewHolder = (ViewHolder) view.getTag(); // 重新获取ViewHolder
-		}
+		}		
 		viewHolder.friendName.setText(friend.getUsername());
 		viewHolder.friendRelationship.setText(friend.getRelationship());
 		return view;
