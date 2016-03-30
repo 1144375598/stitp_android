@@ -13,9 +13,10 @@ import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.ServerHelper;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -40,6 +41,7 @@ public class UseControlActivity extends ActionBarActivity {
 	private ListView controlTimelist;
 	private UseControlDB useControlDB;
 	private UserDB userDB;
+	public boolean ischanged;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,9 @@ public class UseControlActivity extends ActionBarActivity {
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.function_lock)));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this, R.drawable.bg_theme));
+		ischanged = false;
 		useControlDB = new UseControlDB(this);
 		userDB = new UserDB(this);
 
@@ -104,6 +108,7 @@ public class UseControlActivity extends ActionBarActivity {
 			useTimeControl.setEnd(msg[1]);
 			useControlDB.delete(useTimeControl);
 			setListView(username);
+			ischanged = true;
 			break;
 
 		default:
@@ -167,6 +172,7 @@ public class UseControlActivity extends ActionBarActivity {
 		switch (resultCode) {
 		case RESULT_OK:
 			setListView(username);
+			ischanged = true;
 			break;
 		case RESULT_CANCELED:
 			break;
@@ -182,27 +188,36 @@ public class UseControlActivity extends ActionBarActivity {
 	}
 
 	@Override
+	protected void onPause() {
+
+		Log.i("ischanged", ischanged + "");
+		if (ischanged == true) {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					Log.i("up usecontrol", "pause");
+					if (!JudgeState.isNetworkConnected(getApplicationContext())) {
+						return;
+					}
+					String path = "uploadInfo/useTimeControlInfo";
+					ServerHelper serverHelper = new ServerHelper();
+					List<String> childName = userDB.getChildName(loginName);
+					for (String name : childName) {
+						List<UseTimeControl> list = useControlDB
+								.getUseTimeControl(name);
+						serverHelper.uploadContolTime(path, list, name);
+					}
+				}
+			}).start();
+		}
+		super.onPause();
+	}
+
+	@Override
 	protected void onDestroy() {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-
-				if (!JudgeState.isNetworkConnected(getApplicationContext())) {
-					return;
-				}
-				String path = "uploadInfo/useTimeControlInfo";
-				ServerHelper serverHelper = new ServerHelper();
-				List<String> childName = userDB.getChildName(loginName);
-				for (String name : childName) {
-					List<UseTimeControl> list = useControlDB
-							.getUseTimeControl(name);
-					serverHelper.uploadContolTime(path, list);
-				}
-				userDB.close();
-				useControlDB.close();
-			}
-		}).start();
+		userDB.close();
+		useControlDB.close();
 		super.onDestroy();
 	}
 }

@@ -114,12 +114,10 @@ public class ProtectEyeService extends Service {
 					intent = new Intent(ProtectEyeService.this,
 							LockService.class);
 					intent.setAction(LockService.UNLOCK_SUCCESS_ACTION);
-					Log.i("unlock", "protect start unlock");
 					startService(intent);
 					setTimer();
 					break;
 				case SENSOR_SHAKE:
-					Log.i("传感器监听", "监测到晃动，执行操作");
 					showDialog();
 					Toast.makeText(ProtectEyeService.this,
 							getString(R.string.too_bump_to_use_phone),
@@ -135,7 +133,10 @@ public class ProtectEyeService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String action = intent.getAction();
+		String action = null;
+		if (intent != null) {
+			action = intent.getAction();
+		}
 
 		if (TextUtils.equals(action, OPEN_CONTINUE_USE_ACTION)) {
 			setTimer();
@@ -159,14 +160,14 @@ public class ProtectEyeService extends Service {
 
 				@Override
 				public void run() {
-					if (!JudgeState
-							.isNetworkConnected(getApplicationContext())) {						
+					if (!JudgeState.isNetworkConnected(getApplicationContext())) {
 						return;
 					}
 					String path = "downloadInfo/useTimeControlInfo";
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("user.username", username);
 					String result = new ServerHelper().getResult(path, params);
+					Log.i("down usecontrol", result);
 					List<UseTimeControl> list = JsonUtil.getUseControl(result);
 					useControlDB.deleteAndAdd(username, list);
 					setControlTimer();
@@ -178,6 +179,7 @@ public class ProtectEyeService extends Service {
 	}
 
 	private void setControlTimer() {
+		Log.i("username",username);
 		List<UseTimeControl> list = useControlDB.getUseTimeControl(username);
 		if (list.size() == 0) {
 			return;

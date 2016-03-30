@@ -49,15 +49,18 @@ public class UseControlDB {
 	}
 
 	public void deleteAndAdd(String username, List<UseTimeControl> list) {
-		wdb.rawQuery("delete from useTimeControl where username=?",
+		wdb.execSQL("delete from useTimeControl where username=?",
 				new String[] { username });
+		if(list==null||list.size()==0){
+			return;
+		}
 		for (UseTimeControl useTimeControl : list) {
 			addUseTimeControl(username, useTimeControl);
 		}
 	}
 
 	public void delete(UseTimeControl useTimeControl) {
-		wdb.rawQuery(
+		wdb.execSQL(
 				"delete from useTimeControl where username=? and start=? and end=?",
 				new String[] { useTimeControl.getUsername(),
 						useTimeControl.getStart(), useTimeControl.getEnd() });

@@ -13,12 +13,10 @@ import njupt.stitp.android.model.Track;
 import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.model.User;
 import android.util.Base64;
-import android.util.Log;
 
 public class JsonUtil {
 	// json字符串为空返回-1，否则返回状态代码
 	public static int getResultCode(String json) {
-		Log.i("json",json);
 		if (json == null || json.isEmpty())
 			return -1;
 		JSONObject jsonObject = new JSONObject().fromString(json);

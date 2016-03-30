@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import njupt.stitp.android.R;
-import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.GeoDB;
 import njupt.stitp.android.db.TrackDB;
 import njupt.stitp.android.model.GeoFencing;
@@ -18,13 +17,11 @@ import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.Notification;
+import android.app.Notification.Builder;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.app.Notification.Builder;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -49,7 +46,6 @@ public class TrackService extends Service {
 	private String path;
 	private TrackDB trackDB;
 	private GeoDB geoDB;
-	private Handler handler;
 	private String lastAddress;
 	private boolean outOfRange;
 	private LatLng geoCenter;
@@ -73,25 +69,7 @@ public class TrackService extends Service {
 		trackDB = new TrackDB(this);
 		geoDB = new GeoDB(this);
 		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		handler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				switch (msg.what) {
-				case 0:
-					trackDB.updateTrack(unCommitTracks);
-					break;
-				case 1:
-					trackDB.addTracks(tracks, 0);
-					tracks.clear();
-					break;
-				case 2:
-					trackDB.addTracks(tracks, 1);
-					tracks.clear();
-					break;
-				}
-			}
-		};
+
 		lastAddress = null;
 
 		GeoFencing geoFencing = geoDB.getGeo(username);
@@ -125,9 +103,10 @@ public class TrackService extends Service {
 			builder.setContentTitle("提示");
 			builder.setContentText(username + "已超出地理围栏");
 			builder.setTicker("超出地理围栏");
+			builder.setAutoCancel(true);
+			builder.setDefaults(Notification.DEFAULT_SOUND
+					| Notification.DEFAULT_VIBRATE);
 			Notification notification = builder.getNotification();
-			notification.flags = Notification.FLAG_ONLY_ALERT_ONCE
-					| Notification.FLAG_AUTO_CANCEL;
 			nm.notify(0, notification);
 		}
 		return super.onStartCommand(intent, flags, startId);
@@ -149,18 +128,23 @@ public class TrackService extends Service {
 			// 离线定位或网络定位成功
 			if (location.getLocType() == BDLocation.TypeOffLineLocation
 					|| location.getLocType() == BDLocation.TypeNetWorkLocation) {
-				if (outOfRange == false && geoCenter != null) {
+				if (geoCenter != null) {
 					double distance2 = DistanceUtil.getDistance(
 							geoCenter,
 							new LatLng(location.getLatitude(), location
 									.getLongitude()));
 					if (distance2 > distance) {
-						outOfRange = true;
-						outOfRange();
+						if (outOfRange == false) {
+							outOfRange();
+							outOfRange = true;
+						}
+					} else {
+						outOfRange = false;
 					}
 				}
 				if (lastAddress == null
 						|| !location.getAddrStr().equals(lastAddress)) {
+					Log.i("add track", new Date().toString());
 					lastAddress = location.getAddrStr();
 					double latitude = location.getLatitude();
 					double longitude = location.getLongitude();
@@ -175,15 +159,21 @@ public class TrackService extends Service {
 					track.setStayTime(1);
 					tracks.add(track);
 				} else {
-					Track temp = tracks.get(tracks.size() - 1);
-					temp.setStayTime(temp.getStayTime() + 1);
+					Log.i("update track", new Date().toString());
+					if (tracks.size() > 0) {
+						Track temp = tracks.get(tracks.size() - 1);
+						temp.setStayTime(temp.getStayTime() + 1);
+					}
+
 				}
 			}
 			if (tracks.size() >= 60
 					|| (tracks.size() > 0 && tracks.get(tracks.size() - 1)
 							.getStayTime() >= 60)) {
+				Log.i("track size", tracks.size() + "");
 				lastAddress = null;
 				unCommitTracks = trackDB.getUncommitTrack(username);
+				Log.i("uncommittrack", unCommitTracks.size() + "");
 				new Thread(new Runnable() {
 
 					@Override
@@ -197,21 +187,17 @@ public class TrackService extends Service {
 							flag = serverHelper.uploadTrackAndAPP(path,
 									unCommitTracks, null);
 							if (flag) {
-								Message msg = new Message();
-								msg.what = 0;
-								handler.sendMessage(msg);
+								trackDB.updateTrack(unCommitTracks);
 							}
 						}
 						flag = serverHelper.uploadTrackAndAPP(path, tracks,
 								null);
 						if (flag) {
-							Message msg = new Message();
-							msg.what = 1;
-							handler.sendMessage(msg);
+							trackDB.addTracks(tracks, 0);
+							tracks.clear();
 						} else {
-							Message msg = new Message();
-							msg.what = 2;
-							handler.sendMessage(msg);
+							trackDB.addTracks(tracks, 1);
+							tracks.clear();
 						}
 					}
 				}).start();
@@ -228,6 +214,7 @@ public class TrackService extends Service {
 				if (!JudgeState.isNetworkConnected(getApplicationContext())) {
 					return;
 				}
+				Log.i("download geo", "download geo");
 				String path = "downloadInfo/geoFencingInfo";
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("user.username", name2);
@@ -265,7 +252,7 @@ public class TrackService extends Service {
 				params.put("geoFencing.distance", geoFencing.getDistance() + "");
 				params.put("geoFencing.address", geoFencing.getAddress());
 				new ServerHelper().getResult(path, params);
-				Log.i("upload geo","");
+				Log.i("upload geo", "upload");
 			}
 		}).start();
 	}

@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -63,7 +64,8 @@ public class AddFriendActivity extends ActionBarActivity {
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.friend_manage)));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		confirm = (Button) findViewById(R.id.addfriend_sure);
 		friendName = (EditText) findViewById(R.id.et_search_input);
 		parent = (RadioButton) findViewById(R.id.relationship_parent);

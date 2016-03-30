@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import njupt.stitp.android.R;
@@ -26,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -102,7 +104,7 @@ public class TrackActivity extends ActionBarActivity {
 				name = names.get(arg2);
 				Date date = null;
 				try {
-					date = new SimpleDateFormat("yyyy-MM-dd").parse(selectedDay
+					date = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).parse(selectedDay
 							.getText().toString());
 				} catch (ParseException e) {
 					e.printStackTrace();
@@ -293,6 +295,8 @@ public class TrackActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.track)));
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		username = getIntent().getExtras().getString("username");
 		lastDay = (Button) findViewById(R.id.last_day);
 		nextDay = (Button) findViewById(R.id.next_day);
@@ -311,6 +315,7 @@ public class TrackActivity extends ActionBarActivity {
 				super.handleMessage(msg);
 				switch (msg.what) {
 				case 0:
+					@SuppressWarnings("unchecked")
 					List<Track> tracks = (List<Track>) msg.obj;
 					trackDB.dropThenAddTracks(tracks, 2);
 					setTrack(tracks);
@@ -376,7 +381,7 @@ public class TrackActivity extends ActionBarActivity {
 			String dateString = tracks.get(tracks.size() - 1).getAddTime();
 			Date date2 = null;
 			try {
-				date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+				date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())
 						.parse(dateString);
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -400,12 +405,12 @@ public class TrackActivity extends ActionBarActivity {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("user.username", tempName);
 					params.put("dateString",
-							new SimpleDateFormat("yyyy-MM-dd").format(tempDate));
+							new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(tempDate));
 					String result = new ServerHelper().getResult(path, params);
 					int resultCode = JsonUtil.getResultCode(result);
 					if (resultCode == 1 || resultCode == 2) {
 						Message msg = new Message();
-						msg.what = new Integer(resultCode);
+						msg.what = Integer.valueOf(resultCode);
 						handler.sendMessage(msg);
 					} else {
 						List<Track> tracks2 = JsonUtil.getTracks(result);

@@ -17,6 +17,7 @@ import njupt.stitp.android.model.APPDto;
 import njupt.stitp.android.model.Track;
 import njupt.stitp.android.model.UseTimeControl;
 import android.util.Base64;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -33,6 +34,7 @@ public class ServerHelper {
 			}
 			buffer.deleteCharAt(buffer.length() - 1);
 		}
+		Log.i("URL", base + path + "/" + buffer.toString());
 		try {
 			URL url = new URL(base + path);
 			HttpURLConnection connection = (HttpURLConnection) url
@@ -95,6 +97,7 @@ public class ServerHelper {
 		}
 		try {
 			URL url = new URL(base + path);
+			Log.i("server helper track", buffer.toString());
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 			connection.setRequestMethod("POST");
@@ -118,7 +121,7 @@ public class ServerHelper {
 		return false;
 	}
 
-	public boolean uploadContolTime(String path, List<UseTimeControl> params) {
+	public boolean uploadContolTime(String path, List<UseTimeControl> params,String name) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("info =");
 		if (params != null) {
@@ -126,8 +129,10 @@ public class ServerHelper {
 		} else {
 			return false;
 		}
+		buffer.append("&name="+name);
 		try {
 			URL url = new URL(base + path);
+			Log.i("up control", url + "?" + buffer);
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 			connection.setRequestMethod("POST");

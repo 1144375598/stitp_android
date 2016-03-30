@@ -3,7 +3,6 @@ package njupt.stitp.android.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
 	private static String name = "stitp.db";
@@ -49,11 +48,9 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 			+ "primary key(username,appname,addDate))";
 
 	public static int version = 1;
-	private Context mContext;
 
 	public DBOpenHelper(Context context) {
 		super(context, name, null, version);
-		mContext = context;
 	}
 
 	@Override

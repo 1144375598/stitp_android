@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -124,8 +125,11 @@ public class FunctionActivity extends ActionBarActivity {
 		});
 	}
 
+
 	private void init() {
 		username = ((MyApplication) getApplication()).getUsername();
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		useTime = (Chronometer) findViewById(R.id.usetimeChronometer);
 		track = (Button) findViewById(R.id.function_location);
@@ -187,6 +191,8 @@ public class FunctionActivity extends ActionBarActivity {
 				GetAPPMsgService.class);
 		startService(intent1);
 		intent1 = new Intent(FunctionActivity.this, TrackService.class);
+		intent1.setAction(TrackService.DOWNLOAD_GEO_ACTION);
+		intent1.putExtra("username", username);
 		startService(intent1);
 		if (optionDB.getBumpRemind(username) == 1) {
 			intent1 = new Intent(this, ProtectEyeService.class);
@@ -203,6 +209,9 @@ public class FunctionActivity extends ActionBarActivity {
 			intent1.setAction(LockService.LOCK_ACTION);
 			startService(intent1);
 		}
+		intent1 = new Intent(this, ProtectEyeService.class);
+		intent1.setAction(ProtectEyeService.USE_CONTROL_CHANGE);
+		startService(intent1);
 	}
 
 	@Override

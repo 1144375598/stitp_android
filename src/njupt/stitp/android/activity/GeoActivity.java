@@ -1,6 +1,7 @@
 package njupt.stitp.android.activity;
 
 import njupt.stitp.android.R;
+import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.GeoDB;
 import njupt.stitp.android.model.GeoFencing;
 import njupt.stitp.android.service.TrackService;
@@ -8,12 +9,11 @@ import njupt.stitp.android.util.MyActivityManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,8 +44,8 @@ public class GeoActivity extends ActionBarActivity implements
 	private Button confirm;
 	private GeoDB geoDB;
 	private String username;
+	private String loginName;
 	private ProgressDialog p;
-	private Handler handler;
 	private boolean isChanged;
 
 	private GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
@@ -60,28 +60,16 @@ public class GeoActivity extends ActionBarActivity implements
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.geofencing)));
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		geoDB = new GeoDB(this);
 		isChanged = false;
 		username = getIntent().getExtras().getString("username");
+		loginName = ((MyApplication) getApplication()).getUsername();
 		city = (EditText) findViewById(R.id.geo_center_city);
 		address = (EditText) findViewById(R.id.geo_center_address);
 		geoRange = (EditText) findViewById(R.id.geo_range);
 		confirm = (Button) findViewById(R.id.save);
-
-		handler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				switch (msg.what) {
-				case 0:
-					p.dismiss();
-					break;
-
-				default:
-					break;
-				}
-				super.handleMessage(msg);
-			}
-		};
 
 		p = new ProgressDialog(GeoActivity.this);
 		p.setTitle(getString(R.string.wait));
@@ -98,6 +86,11 @@ public class GeoActivity extends ActionBarActivity implements
 
 			@Override
 			public void onClick(View v) {
+				if (TextUtils.equals(loginName, username)) {
+					Toast.makeText(GeoActivity.this, "无法修改自己的围栏信息",
+							Toast.LENGTH_SHORT).show();
+					return;
+				}
 				isChanged = true;
 				mSearch.geocode(new GeoCodeOption().city(
 						city.getText().toString()).address(
@@ -132,6 +125,13 @@ public class GeoActivity extends ActionBarActivity implements
 	@Override
 	protected void onPause() {
 		mMapView.onPause();
+		Log.i("geoactivity pause", "pause");
+		if (isChanged == true) {
+			Intent intent = new Intent(this, TrackService.class);
+			intent.setAction(TrackService.UPLOAD_GEO_ACTION);
+			intent.putExtra("username", username);
+			startService(intent);
+		}
 		super.onPause();
 	}
 
@@ -146,20 +146,12 @@ public class GeoActivity extends ActionBarActivity implements
 		mMapView.onDestroy();
 		mSearch.destroy();
 		geoDB.close();
-		if (isChanged == true) {
-			Intent intent = new Intent(this, TrackService.class);
-			intent.setAction(TrackService.UPLOAD_GEO_ACTION);
-			startService(intent);
-		}
 		super.onDestroy();
 	}
 
 	@Override
 	public void onGetGeoCodeResult(GeoCodeResult result) {
-		Log.i("onGetGeoResult", "");
-		Message msg = new Message();
-		msg.what = 0;
-		handler.sendMessage(msg);
+		p.dismiss();
 		if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
 			Toast.makeText(this, "抱歉，未能找到结果", Toast.LENGTH_LONG).show();
 			isChanged = false;
@@ -200,6 +192,8 @@ public class GeoActivity extends ActionBarActivity implements
 			geoFencing.setLongitude(longitude);
 			geoFencing.setLatitude(latitude);
 			geoDB.saveGeo(username, geoFencing);
+			Toast.makeText(GeoActivity.this, "已保存", Toast.LENGTH_SHORT).show();
+			;
 		}
 	}
 

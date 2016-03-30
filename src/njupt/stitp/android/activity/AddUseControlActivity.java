@@ -8,6 +8,7 @@ import njupt.stitp.android.model.UseTimeControl;
 import njupt.stitp.android.util.MyActivityManager;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,12 +34,13 @@ public class AddUseControlActivity extends ActionBarActivity {
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.add_usecontrol)));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		start = (TimePicker) findViewById(R.id.add_startPicker);
 		end = (TimePicker) findViewById(R.id.add_endPicker);
 		confirm = (Button) findViewById(R.id.add_controltimeSet);
 		useControlDB = new UseControlDB(this);
-		username=getIntent().getExtras().getString("username");
+		username = getIntent().getExtras().getString("username");
 
 		start.setIs24HourView(true);
 		end.setIs24HourView(true);
@@ -70,6 +72,7 @@ public class AddUseControlActivity extends ActionBarActivity {
 			}
 		});
 	}
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -81,11 +84,13 @@ public class AddUseControlActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
 	@Override
 	public void onBackPressed() {
 		setResult(RESULT_CANCELED);
 		super.onBackPressed();
 	}
+
 	@Override
 	protected void onDestroy() {
 		useControlDB.close();

@@ -76,7 +76,6 @@
                 android:id="@+id/function_chat"
                 android:layout_width="50dip"
                 android:layout_height="50dip"
-                android:layout_above="@+id/textViewchat"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/btn_chat" />
 

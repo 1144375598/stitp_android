@@ -7,7 +7,6 @@ import java.util.Map;
 import net.sf.json.JSONObject;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.OptionDB;
-import njupt.stitp.android.db.RelationshipDB;
 import njupt.stitp.android.db.UserDB;
 import njupt.stitp.android.service.AddFriendService;
 import njupt.stitp.android.service.LockService;

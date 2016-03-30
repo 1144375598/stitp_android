@@ -6,9 +6,9 @@ import java.util.Map;
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.service.GetAPPMsgService;
+import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
-import njupt.stitp.android.util.JsonUtil;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
 import android.app.ProgressDialog;
@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -86,6 +87,7 @@ public class RegisterActivity extends ActionBarActivity {
 				} else if (qq == null || qq.isEmpty()) {
 					qqNumber.requestFocus();
 					qqNumber.setError(getString(R.string.QQ_cannot_null));
+					return;
 				}
 				dialog.show();
 				new Thread(new Runnable() {
@@ -117,10 +119,13 @@ public class RegisterActivity extends ActionBarActivity {
 		});
 	}
 
+	
 	private void init() {
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.register_button)));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_register));
 		etusername = (EditText) findViewById(R.id.name);
 		etpassword = (EditText) findViewById(R.id.password);
 		confirmPassword = (EditText) findViewById(R.id.comfirm_password);

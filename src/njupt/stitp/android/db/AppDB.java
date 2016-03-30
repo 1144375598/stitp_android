@@ -4,13 +4,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import njupt.stitp.android.model.APP;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 public class AppDB {
 	private DBOpenHelper helper;
@@ -18,22 +18,21 @@ public class AppDB {
 	private SQLiteDatabase wdb;
 
 	public AppDB(Context context) {
-		helper = new DBOpenHelper(context);
-		
+		helper = new DBOpenHelper(context);	
 		  rdb = helper.getReadableDatabase(); wdb =
 		 helper.getWritableDatabase();
 		 
 	}
 
 	public void saveMessage(String username, List<APP> runningApps) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault());
 		Date date = new Date();
 		String dateString = format.format(date);
 		for (APP app : runningApps) {
 			String insert = "insert or ignore into app(username,appName,addDate,appUseTime,icon) values(?,?,?,?,?)";
 			String update = "update app set appUseTime = appUseTime+5 where username=? and appName=? and addDate=?";
 			wdb.execSQL(insert, new Object[] { username, app.getAppName(),
-					dateString, new Integer(0).toString(), app.getIcon() });
+					dateString, Integer.valueOf(0).toString(), app.getIcon() });
 			wdb.execSQL(update, new String[] { username, app.getAppName(),
 					dateString });
 		}
@@ -44,7 +43,7 @@ public class AppDB {
 		Cursor cursor = rdb.rawQuery(
 				"select * from app where username=? and addDate=?",
 				new String[] { username,
-						new SimpleDateFormat("yyyy-MM-dd").format(addDate) });
+						new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(addDate) });
 		if (cursor.moveToFirst()) {
 			do {
 				APP app = new APP();

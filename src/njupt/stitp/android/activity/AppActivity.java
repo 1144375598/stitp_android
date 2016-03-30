@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import njupt.stitp.android.R;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -113,7 +115,8 @@ public class AppActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.app_use_msg)));
-
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		username = getIntent().getExtras().getString("username");
 		selectChild = (Spinner) findViewById(R.id.selectChild);
 		selectedDay = (TextView) findViewById(R.id.selected_day);
@@ -130,6 +133,7 @@ public class AppActivity extends ActionBarActivity {
 				switch (msg.what) {
 				case 0:
 					appMsgList.removeAllViewsInLayout();
+					@SuppressWarnings("unchecked")
 					List<APP> appList = (List<APP>) msg.obj;
 					AppAdapter adapter = new AppAdapter(AppActivity.this,
 							R.layout.item_appmsg, appList);
@@ -191,9 +195,9 @@ public class AppActivity extends ActionBarActivity {
 
 				@Override
 				public void run() {
-					if(!JudgeState.isNetworkConnected(getApplicationContext())){
-						Message msg=new Message();
-						msg.what=MyApplication.NETWORK_DISCONNECT;
+					if (!JudgeState.isNetworkConnected(getApplicationContext())) {
+						Message msg = new Message();
+						msg.what = MyApplication.NETWORK_DISCONNECT;
 						handler.sendMessage(msg);
 						return;
 					}
@@ -201,12 +205,12 @@ public class AppActivity extends ActionBarActivity {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("user.username", tempName);
 					params.put("dateString",
-							new SimpleDateFormat("yyyy-MM-dd").format(tempDate));
+							new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(tempDate));
 					String result = new ServerHelper().getResult(path, params);
 					int resultCode = JsonUtil.getResultCode(result);
 					if (resultCode == 1 || resultCode == 2) {
 						Message msg = new Message();
-						msg.what = new Integer(resultCode);
+						msg.what = Integer.valueOf(resultCode);
 						handler.sendMessage(msg);
 					} else {
 						List<APP> apps2 = JsonUtil.getApps(result);
@@ -237,11 +241,13 @@ public class AppActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
 	@Override
 	protected void onResume() {
 		initSpinner();
 		super.onResume();
 	}
+
 	@Override
 	protected void onDestroy() {
 		appDB.close();

@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -82,6 +83,8 @@ public class OtherFunctionActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		MyActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.activity_otherfunction);
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		voiceControl = (Switch) findViewById(R.id.switch_voice_control);
 		bumpRemind = (Switch) findViewById(R.id.switch_bump_remind);
 		lockScreen = (Switch) findViewById(R.id.switch_lock_screen);

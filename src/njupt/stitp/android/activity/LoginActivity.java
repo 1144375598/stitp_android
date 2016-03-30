@@ -3,7 +3,6 @@ package njupt.stitp.android.activity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import njupt.stitp.android.R;
 import njupt.stitp.android.application.MyApplication;
 import njupt.stitp.android.db.UserDB;
@@ -13,6 +12,7 @@ import njupt.stitp.android.util.JudgeState;
 import njupt.stitp.android.util.MyActivityManager;
 import njupt.stitp.android.util.SPHelper;
 import njupt.stitp.android.util.ServerHelper;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -40,6 +40,7 @@ public class LoginActivity extends Activity {
 
 	private UserDB userDB;
 
+	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

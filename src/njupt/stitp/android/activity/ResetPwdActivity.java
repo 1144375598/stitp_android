@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -95,6 +96,8 @@ public class ResetPwdActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(
 				new StringBuffer(getString(R.string.reset_pwd)));
+		getSupportActionBar().setBackgroundDrawable(
+				ContextCompat.getDrawable(this,R.drawable.bg_theme));
 		resetPwdAnswer = (EditText) findViewById(R.id.resetpwd_answer);
 		resetPwdQuestion = (TextView) findViewById(R.id.resetpwd_question);
 		confirm = (Button) findViewById(R.id.confirm);

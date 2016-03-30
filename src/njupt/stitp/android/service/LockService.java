@@ -67,7 +67,10 @@ public class LockService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String action = intent.getAction();
+		String action = null;
+		if (intent != null) {
+			action = intent.getAction();
+		}
 		Log.i("lock action", action);
 		Intent i = null;
 		if (TextUtils.equals(action, LOCK_ACTION)) {
